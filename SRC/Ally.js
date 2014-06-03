@@ -1,14 +1,12 @@
-function Ally(data, x, y){
+function Ally(data, x, y, effect){
 	
 	this.name = data.name;
 	this.x = x;
 	this.y = y;
-	this.gold = data.gold;
 	this.range = data.range;
 	this.attack = data.attack;
 	this.health = data.health;
-	this.aspeed = data.aspeed;
-	this.currentAction = 0;
+	this.current = 0;
 	this.listSprites = new Array();
 	this.listSprites.push(new Sprite(data.listStand));
 	this.listStandX = data.listStandX;
@@ -25,11 +23,11 @@ function Ally(data, x, y){
 	this.listDefeatY = data.listDefeatY;
 	this.listDefeatXDiff = data.listDefeatXDiff;
 	this.listDefeatYDiff = data.listDefeatYDiff;
-	this.currentSprite = 0;
+	this.hitEffectSprite = new Sprite(effect)
+	this.frameHit = data.frameHit;
 	
 	this.switchAction = function(action){
-		this.currentAction = action;
-		this.currentSprite = action;
+		this.current = action;
 	}
 	
 }

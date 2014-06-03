@@ -1,19 +1,15 @@
-function Enemy(data, lane, effect){
-
+function AllyP(data, x, y){
+	
 	this.name = data.name;
-	this.x = -90;
-	this.y = (lane-1)*90;
-	this.gold = data.gold;
-	this.range = data.range;
-	this.speed = data.speed;
-	this.attack = data.attack;
+	this.x = x;
+	this.y = y;
 	this.health = data.health;
 	this.listSprites = new Array();
-	this.listSprites.push(new Sprite(data.listMove));
-	this.listMoveX = data.listMoveX;
-	this.listMoveY = data.listMoveY;
-	this.listMoveXDiff = data.listMoveXDiff;
-	this.listMoveYDiff = data.listMoveYDiff;
+	this.listSprites.push(new Sprite(data.listStand));
+	this.listStandX = data.listStandX;
+	this.listStandY = data.listStandY;
+	this.listStandXDiff = data.listStandXDiff;
+	this.listStandYDiff = data.listStandYDiff;
 	this.listSprites.push(new Sprite(data.listAttack));
 	this.listAttackX = data.listAttackX;
 	this.listAttackY = data.listAttackY;
@@ -24,13 +20,9 @@ function Enemy(data, lane, effect){
 	this.listDefeatY = data.listDefeatY;
 	this.listDefeatXDiff = data.listDefeatXDiff;
 	this.listDefeatYDiff = data.listDefeatYDiff;
-	this.hitEffectSprite = new Sprite(effect);
-	this.frameHit = data.frameHit;
+	this.projectiletype = new ProjectileType(projectileList[data.projectile]);
+	this.release = data.release;
 	this.current = 0;
-	
-	this.move = function(){
-		this.x += this.speed;
-	}
 	
 	this.switchAction = function(action){
 		this.current = action;
