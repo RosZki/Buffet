@@ -23,10 +23,14 @@ function Ally(data, x, y, effect){
 	this.listDefeatY = data.listDefeatY;
 	this.listDefeatXDiff = data.listDefeatXDiff;
 	this.listDefeatYDiff = data.listDefeatYDiff;
-	this.hitEffectSprite = new Sprite(effect)
+	this.hitEffectSprite = new Sprite(effect);
 	this.frameHit = data.frameHit;
 	
 	this.switchAction = function(action){
+		if(this.current == 1 && action != 1){
+			this.listSprites[this.current].current = 0;
+		}
+
 		this.current = action;
 	}
 	

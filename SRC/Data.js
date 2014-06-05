@@ -1,6 +1,6 @@
 var projectileList = {
 	
-	"icytreat": { name:"icytreat", attack: 5, speed: 5,
+	"icytreat": { name:"icytreat", attack: 15, speed: 15,
 		listImage:["IMG/EFFECTS/icytreat_shot_1.png","IMG/EFFECTS/icytreat_shot_2.png","IMG/EFFECTS/icytreat_shot_3.png","IMG/EFFECTS/icytreat_shot_4.png"],
 		listX:[80,80,80,80],
 		listY:[80,80,80,80],
@@ -13,7 +13,7 @@ var projectileList = {
 
 var enemyList = {
 
-	1: { name:"Chumpy", health: 50, gold: 20, range: 1, attack: 1, speed: 5, 
+	1: { name:"Chumpy", health: 100, gold: 20, range: 1, attack: 3, speed: 5, 
 	listMove:["IMG/ENEMIES/chumpy_move_1.png","IMG/ENEMIES/chumpy_move_2.png","IMG/ENEMIES/chumpy_move_3.png","IMG/ENEMIES/chumpy_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -31,7 +31,7 @@ var enemyList = {
 	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],	
 	frameHit:[6,9] },
 	
-	2: { name:"Chumpro", health: 100, gold: 40, range: 1, attack: 5, speed: 7, 
+	2: { name:"Chumpro", health: 150, gold: 40, range: 1, attack: 5, speed: 7, 
 	listMove:["IMG/ENEMIES/chumpro_move_1.png","IMG/ENEMIES/chumpro_move_2.png","IMG/ENEMIES/chumpro_move_3.png","IMG/ENEMIES/chumpro_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -49,7 +49,7 @@ var enemyList = {
 	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],
 	frameHit:[6,9] },
 	
-	3: { name:"Armon", health: 120, gold: 40, range: 3, attack: 7, speed: 2, 
+	3: { name:"Armon", health: 200, gold: 40, range: 3, attack: 8, speed: 2, 
 	listMove:["IMG/ENEMIES/armon_move_1.png","IMG/ENEMIES/armon_move_2.png","IMG/ENEMIES/armon_move_3.png","IMG/ENEMIES/armon_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -71,7 +71,8 @@ var enemyList = {
 
 var allyList = {
 	
-	1: {name:"Cubice", health: 100, range: 1, attack: 2,
+	1: {name:"Cubice", health: 100, range: 1, attack: 20,
+	icon: "IMG/ALLIES/cubice_stand_1.png",
 	listStand:["IMG/ALLIES/cubice_stand_1.png","IMG/ALLIES/cubice_stand_2.png","IMG/ALLIES/cubice_stand_3.png","IMG/ALLIES/cubice_stand_4.png"], 
 	listStandX:[80,80,80,80,80,80,80,80,80], 
 	listStandY:[80,80,80,80,80,80,80,80,80], 
@@ -93,6 +94,7 @@ var allyList = {
 var allyListP = {
 
 	1: {name:"IcyTreat", health: 100,
+	icon: "IMG/ALLIES/icytreat_stand_1.png",
 	listStand:["IMG/ALLIES/icytreat_stand_1.png","IMG/ALLIES/icytreat_stand_2.png","IMG/ALLIES/icytreat_stand_3.png","IMG/ALLIES/icytreat_stand_4.png"], 
 	listStandX:[80,80,80,80],
 	listStandY:[80,80,80,80], 
@@ -119,4 +121,14 @@ var effectList = {
 	3:	["IMG/EFFECTS/hit3_1.png", "IMG/EFFECTS/hit3_2.png"],
 	"icytreat":	["IMG/EFFECTS/icytreat_hit_1.png", "IMG/EFFECTS/icytreat_hit_2.png"]
 	
+}
+
+var itemMenuOrder = {
+	length: 2,
+	1: { hasProjectile: false, listValue: 1
+	},
+	2: { hasProjectile: true, listValue: 1
+	},
+	3: {
+	}
 }

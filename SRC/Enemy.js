@@ -33,6 +33,9 @@ function Enemy(data, lane, effect){
 	}
 	
 	this.switchAction = function(action){
+		if(this.current == 1 && action != 1){
+			this.listSprites[this.current].current = 0;
+		}
 		this.current = action;
 	}
 	
