@@ -8,7 +8,6 @@ var projectileList = {
 		listYDiff:[5,5,5,5],
 		hitEffect:"icytreat"
 	}
-	
 }
 
 var enemyList = {
@@ -70,8 +69,8 @@ var enemyList = {
 }
 
 var allyList = {
-	
-	1: {name:"Cubice", health: 100, range: 1, attack: 20,
+
+	1: {name:"Cubice", health: 100, range: 1, attack: 20, type: 1,
 	icon: "IMG/ALLIES/cubice_stand_1.png",
 	listStand:["IMG/ALLIES/cubice_stand_1.png","IMG/ALLIES/cubice_stand_2.png","IMG/ALLIES/cubice_stand_3.png","IMG/ALLIES/cubice_stand_4.png"], 
 	listStandX:[80,80,80,80,80,80,80,80,80], 
@@ -88,12 +87,11 @@ var allyList = {
 	listDefeatY:[80,80,80,80,80,80,80,80,80],
 	listDefeatXDiff:[5,5,5,5,5,5,5,5,5],
 	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],
-	frameHit:[1,5] }
-}
-
-var allyListP = {
-
-	1: {name:"IcyTreat", health: 100,
+	frameHit:[1],
+	requires:["Fridge"],
+	},
+	
+	2: {name:"IcyTreat", health: 100, type: 2,
 	icon: "IMG/ALLIES/icytreat_stand_1.png",
 	listStand:["IMG/ALLIES/icytreat_stand_1.png","IMG/ALLIES/icytreat_stand_2.png","IMG/ALLIES/icytreat_stand_3.png","IMG/ALLIES/icytreat_stand_4.png"], 
 	listStandX:[80,80,80,80],
@@ -111,24 +109,37 @@ var allyListP = {
 	listDefeatXDiff:[5,5,5,5,5,5,5],
 	listDefeatYDiff:[5,5,5,5,5,5,5],
 	projectile: "icytreat",
-	release:[6]	}
+	release:[6],
+	requires:["Fridge"],
+	}
 }
-	
+
 var effectList = {
 
 	1:	["IMG/EFFECTS/hit1_1.png", "IMG/EFFECTS/hit1_2.png"],
 	2:	["IMG/EFFECTS/hit2_1.png", "IMG/EFFECTS/hit2_2.png"],
 	3:	["IMG/EFFECTS/hit3_1.png", "IMG/EFFECTS/hit3_2.png"],
 	"icytreat":	["IMG/EFFECTS/icytreat_hit_1.png", "IMG/EFFECTS/icytreat_hit_2.png"]
-	
 }
 
-var itemMenuOrder = {
-	length: 2,
-	1: { hasProjectile: false, listValue: 1
-	},
-	2: { hasProjectile: true, listValue: 1
-	},
-	3: {
+var factoryList = {
+
+	1:{	name:"Fridge", health: 999, cost: 100, cooldown: 100, storage: 5,
+		icon: "IMG/FACTORIES/fridge.png",
+		listStand:["IMG/FACTORIES/fridge.png"],
+		listStandX:[80],
+		listStandY:[80],
+		listStandXDiff:[5],
+		listStandYDiff:[5],
+		listDefeat:[],
+		listDefeatX:[],
+		listDefeatY:[],
+		listDefeatXDiff:[],
+		listDefeatYDiff:[]
 	}
+}
+
+var buildStats = {
+	"Cubice":{available:0, total:0},
+	"IcyTreat":{available:0, total:0}
 }

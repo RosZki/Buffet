@@ -1,4 +1,4 @@
-function AllyP(data, x, y){
+Factory = function(data, x, y){
 	
 	this.name = data.name;
 	this.x = x;
@@ -10,26 +10,27 @@ function AllyP(data, x, y){
 	this.listStandY = data.listStandY;
 	this.listStandXDiff = data.listStandXDiff;
 	this.listStandYDiff = data.listStandYDiff;
-	this.listSprites.push(new Sprite(data.listAttack));
-	this.listAttackX = data.listAttackX;
-	this.listAttackY = data.listAttackY;
-	this.listAttackXDiff = data.listAttackXDiff;
-	this.listAttackYDiff = data.listAttackYDiff;
 	this.listSprites.push(new Sprite(data.listDefeat));
 	this.listDefeatX = data.listDefeatX;
 	this.listDefeatY = data.listDefeatY;
 	this.listDefeatXDiff = data.listDefeatXDiff;
 	this.listDefeatYDiff = data.listDefeatYDiff;
-	this.projectiletype = new ProjectileType(projectileList[data.projectile]);
-	this.release = data.release;
 	this.current = 0;
+	this.cooldown = data.cooldown;
+	this.cooldownTimer = 0;
 	
 	this.switchAction = function(action){
-		if(this.current == 1 && action != 1){
-			this.listSprites[this.current].current = 0;
-		}
-
 		this.current = action;
+	}
+	
+	this.checkCooldown = function(){
+		if(this.cooldownTimer == this.cooldown){
+			this.cooldownTimer = 0;
+			return true;
+		}else{
+			this.cooldownTimer++;
+			return false;
+		}
 	}
 	
 }
