@@ -1,6 +1,6 @@
 var projectileList = {
 	
-	"icytreat": { name:"icytreat", attack: 15, speed: 15,
+	"icytreat": { name:"icytreat", attack: 8, speed: 15,
 		listImage:["IMG/EFFECTS/icytreat_shot_1.png","IMG/EFFECTS/icytreat_shot_2.png","IMG/EFFECTS/icytreat_shot_3.png","IMG/EFFECTS/icytreat_shot_4.png"],
 		listX:[80,80,80,80],
 		listY:[80,80,80,80],
@@ -12,7 +12,7 @@ var projectileList = {
 
 var enemyList = {
 
-	1: { name:"Chumpy", health: 100, gold: 20, range: 1, attack: 3, speed: 5, 
+	1: { name:"Chumpy", health: 125, gold: 20, range: 1, attack: 5, speed: 5, 
 	listMove:["IMG/ENEMIES/chumpy_move_1.png","IMG/ENEMIES/chumpy_move_2.png","IMG/ENEMIES/chumpy_move_3.png","IMG/ENEMIES/chumpy_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -30,7 +30,7 @@ var enemyList = {
 	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],	
 	frameHit:[6,9] },
 	
-	2: { name:"Chumpro", health: 150, gold: 40, range: 1, attack: 5, speed: 7, 
+	2: { name:"Chumpro", health: 225, gold: 40, range: 1, attack: 8, speed: 7, 
 	listMove:["IMG/ENEMIES/chumpro_move_1.png","IMG/ENEMIES/chumpro_move_2.png","IMG/ENEMIES/chumpro_move_3.png","IMG/ENEMIES/chumpro_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -48,7 +48,7 @@ var enemyList = {
 	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],
 	frameHit:[6,9] },
 	
-	3: { name:"Armon", health: 200, gold: 40, range: 3, attack: 8, speed: 2, 
+	3: { name:"Armon", health: 400, gold: 40, range: 3, attack: 18, speed: 2, 
 	listMove:["IMG/ENEMIES/armon_move_1.png","IMG/ENEMIES/armon_move_2.png","IMG/ENEMIES/armon_move_3.png","IMG/ENEMIES/armon_move_4.png"], 
 	listMoveX:[80,80,80,80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80,80,80,80], 
@@ -70,7 +70,7 @@ var enemyList = {
 
 var allyList = {
 
-	1: {name:"Cubice", health: 100, range: 1, attack: 20, type: 1,
+	1: {name:"Cubice", health: 150, range: 1, attack: 20, type: 1,
 	icon: "IMG/ALLIES/cubice_stand_1.png",
 	listStand:["IMG/ALLIES/cubice_stand_1.png","IMG/ALLIES/cubice_stand_2.png","IMG/ALLIES/cubice_stand_3.png","IMG/ALLIES/cubice_stand_4.png"], 
 	listStandX:[80,80,80,80,80,80,80,80,80], 
@@ -124,13 +124,13 @@ var effectList = {
 
 var factoryList = {
 
-	1:{	name:"Fridge", health: 999, cost: 100, cooldown: 100, storage: 5,
-		icon: "IMG/FACTORIES/fridge.png",
-		listStand:["IMG/FACTORIES/fridge.png"],
-		listStandX:[80],
-		listStandY:[80],
-		listStandXDiff:[5],
-		listStandYDiff:[5],
+	1:{	name:"Fridge", health: 50, cooldown: 250,
+		icon: "IMG/FACTORIES/fridge_stand_1.png",
+		listStand:["IMG/FACTORIES/fridge_stand_1.png","IMG/FACTORIES/fridge_stand_2.png","IMG/FACTORIES/fridge_stand_3.png","IMG/FACTORIES/fridge_stand_4.png","IMG/FACTORIES/fridge_stand_5.png","IMG/FACTORIES/fridge_stand_6.png","IMG/FACTORIES/fridge_stand_7.png","IMG/FACTORIES/fridge_stand_8.png"],
+		listStandX:[80,80,80,80,80,80,80,80],
+		listStandY:[80,80,80,80,80,80,80,80],
+		listStandXDiff:[5,5,5,5,5,5,5,5,5],
+		listStandYDiff:[5,5,5,5,5,5,5,5,5],
 		listDefeat:[],
 		listDefeatX:[],
 		listDefeatY:[],
@@ -139,7 +139,11 @@ var factoryList = {
 	}
 }
 
-var buildStats = {
+var itemStats = {
 	"Cubice":{available:0, total:0},
 	"IcyTreat":{available:0, total:0}
+}
+
+var buildStats = {
+	"Fridge":{cost:300, storage: 2}
 }

@@ -3,6 +3,7 @@
 
 	var imgItemMenu;
 	var imgBuildMenu;
+	var floor;
 	
 	var listEnemies = new Array();
 	var listProjectiles = new Array();
@@ -21,9 +22,15 @@
 	
 	var currentX = -1;
 	var currentY = -1;
-	var spawnTime= -1;
+	var spawnTime= 100;
 	var spawnCounter = 0;
 	var id;
+	var isGameOver = false;
+	
+	var timeleft = 100;
+	var counter = 0;
+	var gold = 300;
+	var life = 1000;
 	
 function init(){
 	ScreenSpace = document.getElementById("Screen");
@@ -31,6 +38,7 @@ function init(){
 	
 	imgItemMenu = document.getElementById("itemmenu");
 	imgBuildMenu = document.getElementById("buildmenu");
+	floor = document.getElementById("floor");
 	ScreenContext.font = "20px Stencil";
 	for(i=0; i<7; i++){
 		listImgLane.push(new Image());
@@ -201,12 +209,28 @@ function randomSpawn(){
 	var lane = random(1,7);
 	var monster = random(1,3);
 	var effect = random(1,3);
+	spawn(monster, lane, effect);
+}
+
+function spawn(monster, lane, effect){
 	listEnemies.push(new Enemy(enemyList[monster], lane, effectList[effect]));
+}
+
+function startWave(time, totaltime){
+	isGameOver = false;
+	counter = 0;
+	timeleft = totaltime;
+	spawnTime = time;
+	spawnCounter = 0;
+}
+
+function stopWave(){
+	timeleft = 0;
 }
 
 function build(){
 	if(selectedItem != null){
-		if(buildStats[allyList[selectedItem].name].available >= 1){
+		if(itemStats[allyList[selectedItem].name].available >= 1){
 			var tempAlly = new Ally(allyList[selectedItem], currentX , currentY);
 			var collide = false;
 			for(i=0;i<listAllies.length;i++){
@@ -221,212 +245,184 @@ function build(){
 			}
 			if(!collide){
 				listAllies.push(tempAlly);
-				buildStats[allyList[selectedItem].name].available--;
+				itemStats[allyList[selectedItem].name].available--;
 				selectedItem = null;		
 			}
 		}
 	}else if(selectedBuild != null){
-		var tempFactory = new Factory(factoryList[selectedBuild], currentX , currentY);
-		var collide = false;
-		for(i=0;i<listAllies.length;i++){
-			if(isCollide(listAllies[i].x, listAllies[i].y, 90, 90, tempFactory.x, tempFactory.y, 90,90)){
-				collide = true;
-			}
-		}
-		for(i=0;i<listFactories.length;i++){
-			if(isCollide(listFactories[i].x, listFactories[i].y, 90, 90, tempFactory.x, tempFactory.y, 90,90)){
-				collide = true;
-			}
-		}
-		if(!collide){
-			listFactories.push(tempFactory);
-			for(i=1;i<=Object.keys(allyList).length;i++){
-				for(j=0;j<allyList[i].requires.length;j++){
-					if(allyList[i].requires[j] ==factoryList[selectedBuild].name){
-						buildStats[allyList[i].name].total+=factoryList[selectedBuild].storage/Object.keys(allyList[i].requires).length;
-					}
+		if(gold >= buildStats[factoryList[selectedBuild].name].cost){
+			var tempFactory = new Factory(factoryList[selectedBuild], currentX , currentY);
+			var collide = false;
+			for(i=0;i<listAllies.length;i++){
+				if(isCollide(listAllies[i].x, listAllies[i].y, 90, 90, tempFactory.x, tempFactory.y, 90,90)){
+					collide = true;
 				}
 			}
-			selectedBuild = null;		
+			for(i=0;i<listFactories.length;i++){
+				if(isCollide(listFactories[i].x, listFactories[i].y, 90, 90, tempFactory.x, tempFactory.y, 90,90)){
+					collide = true;
+				}
+			}
+			if(!collide){
+				listFactories.push(tempFactory);
+				for(i=1;i<=Object.keys(allyList).length;i++){
+					for(j=0;j<allyList[i].requires.length;j++){
+						if(allyList[i].requires[j] ==factoryList[selectedBuild].name){
+							if(itemStats[allyList[i].name].total == 0 && itemStats[allyList[i].name].available == 0){
+								itemStats[allyList[i].name].available = 1;
+							}
+							itemStats[allyList[i].name].total+=buildStats[factoryList[selectedBuild].name].storage/Object.keys(allyList[i].requires).length;
+						}
+					}
+				}
+				gold-=buildStats[factoryList[selectedBuild].name].cost;
+				buildStats[factoryList[selectedBuild].name].cost+=Math.floor(buildStats[factoryList[selectedBuild].name].cost*0.75);
+				if(buildStats[factoryList[selectedBuild].name].cost > 99999){
+					buildStats[factoryList[selectedBuild].name].cost = 99999;
+				}
+				selectedBuild = null;		
+			}
 		}
 	}
 }
 
 function update(){
-	if(spawnCounter == spawnTime){
-		randomSpawn();
-		spawnCounter = 0;
+	if(life <= 0){
+		isGameOver = true;
 	}
 	else{
-		spawnCounter++;
-	}
-	for(i=0; i<listFactories.length; i++){
-		if(listFactories[i].checkCooldown()){
-			for(j=1;j<=Object.keys(allyList).length;j++){
-				for(k=0;k<Object.keys(allyList[j].requires).length;k++){
-					if(allyList[j].requires[k] == listFactories[i].name && buildStats[allyList[j].name].available+1 <= buildStats[allyList[j].name].total){
-						buildStats[allyList[j].name].available++;
+		if(timeleft > 0){
+			if(counter == 30){
+				timeleft--;
+				counter = 0;
+			}
+			else{
+				counter++;
+			}
+			if(timeleft == 10){
+				spawnCounter = 0;
+				spawnTime = 10;
+			}
+			if(spawnCounter == spawnTime){
+				randomSpawn();
+				spawnCounter = 0;
+			}
+			else{
+				spawnCounter++;
+			}
+		}
+		for(i=0; i<listFactories.length; i++){
+			var isFactoryDead = false;
+			if(listFactories[i].health<=0){
+				for(j=1;j<=Object.keys(allyList).length;j++){
+					for(k=0;k<allyList[j].requires.length;k++){
+						if(allyList[j].requires[k] == listFactories[i].name){
+							itemStats[allyList[j].name].total-=buildStats[listFactories[i].name].storage/Object.keys(allyList[j].requires).length;
+						}
+					}
+				}
+				listFactories.splice(i,1);
+				isFactoryDead = true;
+			}
+			else{	
+				if(listFactories[i].checkCooldown()){
+					for(j=1;j<=Object.keys(allyList).length;j++){
+						for(k=0;k<Object.keys(allyList[j].requires).length;k++){
+							if(allyList[j].requires[k] == listFactories[i].name && itemStats[allyList[j].name].available+1 <= itemStats[allyList[j].name].total){
+								itemStats[allyList[j].name].available++;
+							}
+						}
 					}
 				}
 			}
+			if(!isFactoryDead){
+				listFactories[i].listSprites[listFactories[i].current].next();
+			}
 		}
-	}
-	for(i=0; i<listProjectiles.length;i++){
-		var isDone = false;
-		if(listProjectiles[i].x <0){
-			listProjectiles.splice(i,1);
-			isDone = true;
-		}
-		else if(listProjectiles[i].current == 1){	
-			if(listProjectiles[i].spriteList[listProjectiles[i].current].current == listProjectiles[i].spriteList[listProjectiles[i].current].listImage.length-1){
+		for(i=0; i<listProjectiles.length;i++){
+			var isDone = false;
+			if(listProjectiles[i].x <0){
 				listProjectiles.splice(i,1);
 				isDone = true;
 			}
-		}
-		else{
-			for(j=0;j<listEnemies.length;j++){
-				if(isCollide(listProjectiles[i].x, listProjectiles[i].y,
-				listProjectiles[i].listX[listProjectiles[i].spriteList[listProjectiles[i].current].current], 
-				listProjectiles[i].listY[listProjectiles[i].spriteList[listProjectiles[i].current].current], 
-				listEnemies[j].x, listEnemies[j].y, 90, 90)){
-					listProjectiles[i].switchAction(1);	
-					listEnemies[j].health-=listProjectiles[i].attack/5;
+			else if(listProjectiles[i].current == 1){	
+				if(listProjectiles[i].listSprites[listProjectiles[i].current].current == listProjectiles[i].listSprites[listProjectiles[i].current].listImage.length-1){
+					listProjectiles.splice(i,1);
+					isDone = true;
 				}
 			}
-		}
-		if(!isDone){
-			listProjectiles[i].move();
-			listProjectiles[i].spriteList[listProjectiles[i].current].next();
-		}
-	}
-	for(i=0; i<listEnemies.length; i++){
-		var hasEnemyDeath = false;
-		if(listEnemies[i].health<=0){
-			if(listEnemies[i].current != 2){
-				listEnemies[i].switchAction(2);
-			}
 			else{
-				if(listEnemies[i].listSprites[listEnemies[i].current].current == listEnemies[i].listSprites[listEnemies[i].current].listImage.length-1){
-					listEnemies.splice(i,1);
-					hasEnemyDeath = true;
-				}
-			}
-		}
-		else if(listEnemies[i].x + listEnemies[i].speed > 1350){
-			listEnemies[i].x = 1350;
-			listEnemies[i].switchAction(1);
-		}
-		else{
-			var tempCollide = false;
-			for(j=0;j<listAllies.length;j++){
-				if(isCollide(listEnemies[i].x+listEnemies[i].speed, listEnemies[i].y, 90, 90, listAllies[j].x, listAllies[j].y, 90,90))
-					tempCollide = true;
-			}
-			for(j=0;j<listFactories.length;j++){
-				if(isCollide(listEnemies[i].x+listEnemies[i].speed, listEnemies[i].y, 90, 90, listFactories[j].x, listFactories[j].y, 90,90))
-					tempCollide = true;
-			}
-			if(tempCollide){
-				listEnemies[i].switchAction(1);
-				listEnemies[i].hitEffectSprite.next();
-			}
-			else{
-				listEnemies[i].switchAction(0);
-				listEnemies[i].move();
-			}
-		}
-		if(!hasEnemyDeath)
-			listEnemies[i].listSprites[listEnemies[i].current].next();
-	}
-	for(i=0; i<listAllies.length; i++){
-		var hasAllyDeath = false;
-		if(listAllies[i].health<=0){
-			if(listAllies[i].current != 2){
-				listAllies[i].switchAction(2);
-			}
-			else{
-				if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-1){
-					listAllies.splice(i,1);
-					hasAllyDeath = true;
-				}
-			}
-		}
-		else if (listAllies[i].type == 1){
-			var tempEnemyInRange = false;
-			var tempRect;
-			switch(listAllies[i].range){
-			case 1: tempRect = {x:listAllies[i].x-90, y:listAllies[i].y, w:90, h:90};
-					break;
-			case 2:	tempRect = {x:listAllies[i].x-180, y:listAllies[i].y, w:180, h:90};
-					break;
-			case 3:	tempRect = {x:listAllies[i].x-90, y:listAllies[i].y-90, w:90, h:270};
-					break;
-			}
 				for(j=0;j<listEnemies.length;j++){
-					if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) || 
-					isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
-						tempEnemyInRange = true;
-					}
-				}
-				if(tempEnemyInRange){
-					listAllies[i].switchAction(1);
-					listAllies[i].hitEffectSprite.next();
-				}
-				else
-					listAllies[i].switchAction(0);
-		}else if(listAllies[i].type == 2){
-			var tempEnemyInRange = false;
-			var tempRect = {x:0, y:listAllies[i].y, w:listAllies[i].x, h:90};
-			for(j=0;j<listEnemies.length;j++){
-				if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) || 
-					isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
-					tempEnemyInRange = true;
-				}
-			}
-			if(tempEnemyInRange){
-				listAllies[i].switchAction(1);
-				for(j=0;j<listAllies[i].release.length;j++){
-					if (listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].release[j]){
-						tempi = i;
-						listProjectiles.push(new Projectile(listAllies[i].projectiletype, listAllies[i].x-45, listAllies[i].y));
-						i = tempi;
+					if(isCollide(listProjectiles[i].x, listProjectiles[i].y,
+					listProjectiles[i].listX[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
+					listProjectiles[i].listY[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
+					listEnemies[j].x, listEnemies[j].y, 90, 90)){
+						listProjectiles[i].switchAction(1);	
+						listEnemies[j].health-=listProjectiles[i].attack/5;
 					}
 				}
 			}
-			else
-				listAllies[i].switchAction(0);
-		}
-		if(!hasAllyDeath)
-			listAllies[i].listSprites[listAllies[i].current].next();
-	}	
-	for(i=0; i<listEnemies.length; i++){
-		if(listEnemies[i].current == 1){
-			var tempRect;
-			switch(listEnemies[i].range){
-			case 1: tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y, w:90, h:90};
-					break;
-			case 2:	tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y, w:180, h:90};
-					break;
-			case 3:	tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y-90, w:90, h:270};
-					break;
-			}
-			for(j=0;j<listAllies.length;j++){
-				if(isCollide(listAllies[j].x, listAllies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
-					if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
-						listAllies[j].health-=listEnemies[i].attack/15;
-				}
-			}
-			for(j=0;j<listFactories.length;j++){
-				if(isCollide(listFactories[j].x, listFactories[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
-					if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
-						listFactories[j].health-=listEnemies[i].attack/15;
-				}
+			if(!isDone){
+				listProjectiles[i].move();
+				listProjectiles[i].listSprites[listProjectiles[i].current].next();
 			}
 		}
-	}
-	for(i=0; i<listAllies.length; i++){
-		if(listAllies[i].type == 1){
-			if(listAllies[i].current == 1){
+		for(i=0; i<listEnemies.length; i++){
+			var hasEnemyDeath = false;
+			if(listEnemies[i].health<=0){
+				if(listEnemies[i].current != 2){
+					listEnemies[i].switchAction(2);
+				}
+				else{
+					if(listEnemies[i].listSprites[listEnemies[i].current].current == listEnemies[i].listSprites[listEnemies[i].current].listImage.length-1){
+						gold+=listEnemies[i].gold;
+						listEnemies.splice(i,1);
+						hasEnemyDeath = true;
+					}
+				}
+			}
+			else if(listEnemies[i].x > 1440){
+				life-=listEnemies[i].health;
+				listEnemies.splice(i,1);
+				hasEnemyDeath = true;
+			}
+			else{
+				var tempCollide = false;
+				for(j=0;j<listAllies.length;j++){
+					if(isCollide(listEnemies[i].x+listEnemies[i].speed, listEnemies[i].y, 90, 90, listAllies[j].x, listAllies[j].y, 90,90))
+						tempCollide = true;
+				}
+				for(j=0;j<listFactories.length;j++){
+					if(isCollide(listEnemies[i].x+listEnemies[i].speed, listEnemies[i].y, 90, 90, listFactories[j].x, listFactories[j].y, 90,90))
+						tempCollide = true;
+				}
+				if(tempCollide){
+					listEnemies[i].switchAction(1);
+					listEnemies[i].hitEffectSprite.next();
+				}
+				else{
+					listEnemies[i].switchAction(0);
+					listEnemies[i].move();
+				}
+			}
+			if(!hasEnemyDeath)
+				listEnemies[i].listSprites[listEnemies[i].current].next();
+		}
+		for(i=0; i<listAllies.length; i++){
+			var hasAllyDeath = false;
+			if(listAllies[i].health<=0){
+				if(listAllies[i].current != 2){
+					listAllies[i].switchAction(2);
+				}
+				else{
+					if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-1){
+						listAllies.splice(i,1);
+						hasAllyDeath = true;
+					}
+				}
+			}
+			else if (listAllies[i].type == 1){
+				var tempEnemyInRange = false;
 				var tempRect;
 				switch(listAllies[i].range){
 				case 1: tempRect = {x:listAllies[i].x-90, y:listAllies[i].y, w:90, h:90};
@@ -436,11 +432,86 @@ function update(){
 				case 3:	tempRect = {x:listAllies[i].x-90, y:listAllies[i].y-90, w:90, h:270};
 						break;
 				}
-				for(j=0;j<listEnemies.length;j++){
-					if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)|| 
+					for(j=0;j<listEnemies.length;j++){
+						if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) || 
 						isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
-						if(listAllies[i].listSprites[1].current >= listAllies[i].frameHit[0])
-							listEnemies[j].health-=listAllies[i].attack/15;
+							tempEnemyInRange = true;
+						}
+					}
+					if(tempEnemyInRange){
+						listAllies[i].switchAction(1);
+						listAllies[i].hitEffectSprite.next();
+					}
+					else
+						listAllies[i].switchAction(0);
+			}else if(listAllies[i].type == 2){
+				var tempEnemyInRange = false;
+				var tempRect = {x:0, y:listAllies[i].y, w:listAllies[i].x, h:90};
+				for(j=0;j<listEnemies.length;j++){
+					if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) || 
+						isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
+						tempEnemyInRange = true;
+					}
+				}
+				if(tempEnemyInRange){
+					listAllies[i].switchAction(1);
+					for(j=0;j<listAllies[i].release.length;j++){
+						if (listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].release[j]){
+							tempi = i;
+							listProjectiles.push(new Projectile(listAllies[i].projectiletype, listAllies[i].x-45, listAllies[i].y));
+							i = tempi;
+						}
+					}
+				}
+				else
+					listAllies[i].switchAction(0);
+			}
+			if(!hasAllyDeath)
+				listAllies[i].listSprites[listAllies[i].current].next();
+		}	
+		for(i=0; i<listEnemies.length; i++){
+			if(listEnemies[i].current == 1){
+				var tempRect;
+				switch(listEnemies[i].range){
+				case 1: tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y, w:90, h:90};
+						break;
+				case 2:	tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y, w:180, h:90};
+						break;
+				case 3:	tempRect = {x:listEnemies[i].x+90, y:listEnemies[i].y-90, w:90, h:270};
+						break;
+				}
+				for(j=0;j<listAllies.length;j++){
+					if(isCollide(listAllies[j].x, listAllies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
+						if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
+							listAllies[j].health-=listEnemies[i].attack/15;
+					}
+				}
+				for(j=0;j<listFactories.length;j++){
+					if(isCollide(listFactories[j].x, listFactories[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
+						if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
+							listFactories[j].health-=listEnemies[i].attack/15;
+					}
+				}
+			}
+		}
+		for(i=0; i<listAllies.length; i++){
+			if(listAllies[i].type == 1){
+				if(listAllies[i].current == 1){
+					var tempRect;
+					switch(listAllies[i].range){
+					case 1: tempRect = {x:listAllies[i].x-90, y:listAllies[i].y, w:90, h:90};
+							break;
+					case 2:	tempRect = {x:listAllies[i].x-180, y:listAllies[i].y, w:180, h:90};
+							break;
+					case 3:	tempRect = {x:listAllies[i].x-90, y:listAllies[i].y-90, w:90, h:270};
+							break;
+					}
+					for(j=0;j<listEnemies.length;j++){
+						if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)|| 
+							isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
+							if(listAllies[i].listSprites[1].current >= listAllies[i].frameHit[0])
+								listEnemies[j].health-=listAllies[i].attack/15;
+						}
 					}
 				}
 			}
@@ -449,10 +520,12 @@ function update(){
 }
 
 function draw(){
-	
-	for(i=0;i<7;i++){
+	ScreenContext.font = "20px Stencil";
+	/*(i=0;i<7;i++){
 		ScreenContext.drawImage(listImgLane[i], 0, i*90+45, 1440, 90);
-	}
+	}*/
+	
+	ScreenContext.drawImage(floor, 0, 45, 1440, 630);
 	
 	for(i=0; i<listEnemies.length; i++){
 		switch(listEnemies[i].current){
@@ -569,11 +642,11 @@ function draw(){
 	}
 	
 	for(i=0;i<listProjectiles.length;i++){
-		ScreenContext.drawImage(listProjectiles[i].spriteList[listProjectiles[i].current].listImage[listProjectiles[i].spriteList[listProjectiles[i].current].current], 
+		ScreenContext.drawImage(listProjectiles[i].listSprites[listProjectiles[i].current].listImage[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
 		listProjectiles[i].x, 
 		listProjectiles[i].y + 45, 
-		listProjectiles[i].listX[listProjectiles[i].spriteList[listProjectiles[i].current].current],
-		listProjectiles[i].listY[listProjectiles[i].spriteList[listProjectiles[i].current].current]
+		listProjectiles[i].listX[listProjectiles[i].listSprites[listProjectiles[i].current].current],
+		listProjectiles[i].listY[listProjectiles[i].listSprites[listProjectiles[i].current].current]
 		);
 	}
 	
@@ -582,7 +655,6 @@ function draw(){
 	}else if(selectedBuild != null && currentX != -1 && currentY != -1){
 		ScreenContext.drawImage(listImgBuild[selectedBuild-1], currentX+5, currentY+50, 80, 80);
 	}
-	
 	
 	ScreenContext.drawImage(imgItemMenu, 0, 675, 1560, 130);
 	ScreenContext.drawImage(imgBuildMenu, 1440, 45, 120, 630);
@@ -625,7 +697,35 @@ function draw(){
 	}
 	ScreenContext.fillStyle = "white";
 	for(i=1;i<=Object.keys(allyList).length;i++){
-		ScreenContext.fillText(buildStats[allyList[i].name].available + "/" + buildStats[allyList[i].name].total, ((i-1)*100)+42, 710);
+		if(itemStats[allyList[i].name].available == 0)
+			ScreenContext.fillStyle = "red";
+		else
+			ScreenContext.fillStyle = "white";
+		ScreenContext.fillText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*100)+42, 710);
+	}
+	
+	for(i=1;i<=Object.keys(factoryList).length;i++){
+		if(gold<buildStats[factoryList[i].name].cost)
+			ScreenContext.fillStyle = "red";
+		else
+			ScreenContext.fillStyle = "white";
+		ScreenContext.fillText(buildStats[factoryList[i].name].cost, 1460, ((i-1)*100)+65+80);
+	}
+	
+	ScreenContext.fillStyle = "white";
+	ScreenContext.fillText("Gold: " + gold, 10, 28);
+	ScreenContext.fillText("Spawn Time Left: " + timeleft, 130, 28);
+	ScreenContext.fillText("<3: " + Math.floor(life), 1340, 28);
+	
+	if(isGameOver){
+		ScreenContext.globalAlpha = 0.6;
+		ScreenContext.drawImage(document.getElementById("grayoverlay"), 0, 0, 1560, 790);
+		ScreenContext.font = "200px Stencil";
+		ScreenContext.globalAlpha = 1;
+		ScreenContext.fillStyle = "white";
+		ScreenContext.fillText("THANKS OBAMA", 20, 400);
+		ScreenContext.fillStyle = "black";
+		ScreenContext.strokeText("THANKS OBAMA", 20, 400);
 	}
 	
 }
