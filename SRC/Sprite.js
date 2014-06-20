@@ -4,9 +4,9 @@ function Sprite(list){
 	this.current = 0;
 	this.counter = 0;
 	
-	for(i=0;i<list.length;i++){
+	for(z=0;z<list.length;z++){
 		this.listImage.push(new Image());
-		this.listImage[i].src = list[i];
+		this.listImage[z].src = list[z];
 	}
 	
 	this.next = function(){
@@ -25,5 +25,9 @@ function Sprite(list){
 		}
 		else
 			this.current++;
+	}
+	
+	this.getCurrentFrame = function(){
+		return this.listImage[this.current];
 	}
 }

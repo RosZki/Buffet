@@ -22,15 +22,10 @@
 	
 	var currentX = -1;
 	var currentY = -1;
-	var spawnTime= 100;
-	var spawnCounter = 0;
 	var id;
 	var isGameOver = false;
 	
-	var timeleft = 100;
 	var counter = 0;
-	var gold = 300;
-	var life = 1000;
 	
 function init(){
 	ScreenSpace = document.getElementById("Screen");
@@ -174,8 +169,8 @@ function onMove(e){
 	}
 }
 
-function random(start,end){
-	return Math.floor((Math.random() * end)+start);
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function isCollide(x1,y1,w1,h1,x2,y2,w2,h2){
@@ -219,13 +214,13 @@ function spawn(monster, lane, effect){
 function startWave(time, totaltime){
 	isGameOver = false;
 	counter = 0;
-	timeleft = totaltime;
-	spawnTime = time;
-	spawnCounter = 0;
+	gameStats["timeleft"] = totaltime;
+	gameStats["spawntime"] = time;
+	gameStats["spawncounter"] = 0;
 }
 
 function stopWave(){
-	timeleft = 0;
+	gameStats["timeleft"] = 0;
 }
 
 function build(){
@@ -250,7 +245,7 @@ function build(){
 			}
 		}
 	}else if(selectedBuild != null){
-		if(gold >= buildStats[factoryList[selectedBuild].name].cost){
+		if(gameStats["gold"] >= buildStats[factoryList[selectedBuild].name].cost){
 			var tempFactory = new Factory(factoryList[selectedBuild], currentX , currentY);
 			var collide = false;
 			for(i=0;i<listAllies.length;i++){
@@ -275,7 +270,7 @@ function build(){
 						}
 					}
 				}
-				gold-=buildStats[factoryList[selectedBuild].name].cost;
+				gameStats["gold"]-=buildStats[factoryList[selectedBuild].name].cost;
 				buildStats[factoryList[selectedBuild].name].cost+=Math.floor(buildStats[factoryList[selectedBuild].name].cost*0.75);
 				if(buildStats[factoryList[selectedBuild].name].cost > 99999){
 					buildStats[factoryList[selectedBuild].name].cost = 99999;
@@ -287,28 +282,28 @@ function build(){
 }
 
 function update(){
-	if(life <= 0){
+	if(gameStats["life"] <= 0){
 		isGameOver = true;
 	}
 	else{
-		if(timeleft > 0){
+		if(gameStats["timeleft"] > 0){
 			if(counter == 30){
-				timeleft--;
+				gameStats["timeleft"]--;
 				counter = 0;
 			}
 			else{
 				counter++;
 			}
-			if(timeleft == 10){
-				spawnCounter = 0;
-				spawnTime = 10;
+			if(gameStats["timeleft"] == 10){
+				gameStats["spawncounter"] = 0;
+				gameStats["spawntime"] = 10;
 			}
-			if(spawnCounter == spawnTime){
+			if(gameStats["spawncounter"] == gameStats["spawntime"]){
 				randomSpawn();
-				spawnCounter = 0;
+				gameStats["spawncounter"] = 0;
 			}
 			else{
-				spawnCounter++;
+				gameStats["spawncounter"]++;
 			}
 		}
 		for(i=0; i<listFactories.length; i++){
@@ -356,14 +351,15 @@ function update(){
 					if(isCollide(listProjectiles[i].x, listProjectiles[i].y,
 					listProjectiles[i].listX[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
 					listProjectiles[i].listY[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
-					listEnemies[j].x, listEnemies[j].y, 90, 90)){
+					listEnemies[j].x-20, listEnemies[j].y, 90, 90)){
 						listProjectiles[i].switchAction(1);	
-						listEnemies[j].health-=listProjectiles[i].attack/5;
+						listEnemies[j].health-=listProjectiles[i].attack;
 					}
 				}
 			}
 			if(!isDone){
-				listProjectiles[i].move();
+				if(listProjectiles[i].current == 0)
+					listProjectiles[i].move();
 				listProjectiles[i].listSprites[listProjectiles[i].current].next();
 			}
 		}
@@ -375,14 +371,16 @@ function update(){
 				}
 				else{
 					if(listEnemies[i].listSprites[listEnemies[i].current].current == listEnemies[i].listSprites[listEnemies[i].current].listImage.length-1){
-						gold+=listEnemies[i].gold;
+						gameStats["gold"]+=listEnemies[i].gold;
+						if(gameStats["gold"]>99999)
+							gameStats["gold"] = 99999;
 						listEnemies.splice(i,1);
 						hasEnemyDeath = true;
 					}
 				}
 			}
 			else if(listEnemies[i].x > 1440){
-				life-=listEnemies[i].health;
+				gameStats["life"]-=listEnemies[i].health;
 				listEnemies.splice(i,1);
 				hasEnemyDeath = true;
 			}
@@ -456,10 +454,10 @@ function update(){
 				if(tempEnemyInRange){
 					listAllies[i].switchAction(1);
 					for(j=0;j<listAllies[i].release.length;j++){
-						if (listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].release[j]){
-							tempi = i;
-							listProjectiles.push(new Projectile(listAllies[i].projectiletype, listAllies[i].x-45, listAllies[i].y));
-							i = tempi;
+						if (listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].release[j] && listAllies[i].listSprites[listAllies[i].current].counter == 0){
+							//milotrial = random(-10,10);
+							milotrial = 0;
+							listProjectiles.push(new Projectile(listAllies[i].projectiletype, listAllies[i].x-45, listAllies[i].y+milotrial));
 						}
 					}
 				}
@@ -482,14 +480,18 @@ function update(){
 				}
 				for(j=0;j<listAllies.length;j++){
 					if(isCollide(listAllies[j].x, listAllies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
-						if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
-							listAllies[j].health-=listEnemies[i].attack/15;
+						for(k=0;k<listEnemies[i].frameHit.length;k++){
+							if(listEnemies[i].listSprites[1].current == listEnemies[i].frameHit[k] && listEnemies[i].listSprites[1].counter == 0)
+								listAllies[j].health-=listEnemies[i].attack;
+						}
 					}
 				}
 				for(j=0;j<listFactories.length;j++){
 					if(isCollide(listFactories[j].x, listFactories[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
-						if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0])
-							listFactories[j].health-=listEnemies[i].attack/15;
+						for(k=0;k<listEnemies[i].frameHit.length;k++){
+							if(listEnemies[i].listSprites[1].current == listEnemies[i].frameHit[k] && listEnemies[i].listSprites[1].counter == 0)
+								listFactories[j].health-=listEnemies[i].attack;
+						}
 					}
 				}
 			}
@@ -509,8 +511,10 @@ function update(){
 					for(j=0;j<listEnemies.length;j++){
 						if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)|| 
 							isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
-							if(listAllies[i].listSprites[1].current >= listAllies[i].frameHit[0])
-								listEnemies[j].health-=listAllies[i].attack/15;
+							for(k=0;k<listAllies[i].frameHit.length;k++){
+							if(listAllies[i].listSprites[1].current == listAllies[i].frameHit[k] && listAllies[i].listSprites[1].counter == 0)
+								listEnemies[j].health-=listAllies[i].attack;
+							}
 						}
 					}
 				}
@@ -519,72 +523,30 @@ function update(){
 	}
 }
 
-function draw(){
-	ScreenContext.font = "20px Stencil";
-	/*(i=0;i<7;i++){
-		ScreenContext.drawImage(listImgLane[i], 0, i*90+45, 1440, 90);
-	}*/
-	
-	ScreenContext.drawImage(floor, 0, 45, 1440, 630);
-	
-	for(i=0; i<listEnemies.length; i++){
-		switch(listEnemies[i].current){
-		case 0: ScreenContext.drawImage(listEnemies[i].listSprites[listEnemies[i].current].listImage[listEnemies[i].listSprites[listEnemies[i].current].current],
-				listEnemies[i].x + listEnemies[i].listMoveXDiff[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].y + listEnemies[i].listMoveYDiff[listEnemies[i].listSprites[listEnemies[i].current].current]+45, 
-				listEnemies[i].listMoveX[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].listMoveY[listEnemies[i].listSprites[listEnemies[i].current].current]);
-				break;
-		case 1: ScreenContext.drawImage(listEnemies[i].listSprites[listEnemies[i].current].listImage[listEnemies[i].listSprites[listEnemies[i].current].current],
-				listEnemies[i].x + listEnemies[i].listAttackXDiff[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].y + listEnemies[i].listAttackYDiff[listEnemies[i].listSprites[listEnemies[i].current].current]+45, 
-				listEnemies[i].listAttackX[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].listAttackY[listEnemies[i].listSprites[listEnemies[i].current].current]);
-				break;
-		case 2: ScreenContext.drawImage(listEnemies[i].listSprites[listEnemies[i].current].listImage[listEnemies[i].listSprites[listEnemies[i].current].current],
-				listEnemies[i].x + listEnemies[i].listDefeatXDiff[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].y + listEnemies[i].listDefeatYDiff[listEnemies[i].listSprites[listEnemies[i].current].current]+45, 
-				listEnemies[i].listDefeatX[listEnemies[i].listSprites[listEnemies[i].current].current], 
-				listEnemies[i].listDefeatY[listEnemies[i].listSprites[listEnemies[i].current].current]);
-		}
+function drawSprites(){
+	for(i=0; i<listFactories.length; i++){
+		ScreenContext.drawImage(listFactories[i].getCurrentFrame(),
+		listFactories[i].x + listFactories[i].getCurrentXDiff(), 
+		listFactories[i].y + listFactories[i].getCurrentYDiff()+45, 
+		listFactories[i].getCurrentX(), 
+		listFactories[i].getCurrentY());
 	}
 	
 	for(i=0; i<listAllies.length; i++){
-		switch(listAllies[i].current){
-		case 0: ScreenContext.drawImage(listAllies[i].listSprites[listAllies[i].current].listImage[listAllies[i].listSprites[listAllies[i].current].current],
-				listAllies[i].x + listAllies[i].listStandXDiff[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].y + listAllies[i].listStandYDiff[listAllies[i].listSprites[listAllies[i].current].current]+45, 
-				listAllies[i].listStandX[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].listStandY[listAllies[i].listSprites[listAllies[i].current].current]);
-				break;
-		case 1: ScreenContext.drawImage(listAllies[i].listSprites[listAllies[i].current].listImage[listAllies[i].listSprites[listAllies[i].current].current],
-				listAllies[i].x + listAllies[i].listAttackXDiff[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].y + listAllies[i].listAttackYDiff[listAllies[i].listSprites[listAllies[i].current].current]+45, 
-				listAllies[i].listAttackX[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].listAttackY[listAllies[i].listSprites[listAllies[i].current].current]);
-				break;
-		case 2: ScreenContext.drawImage(listAllies[i].listSprites[listAllies[i].current].listImage[listAllies[i].listSprites[listAllies[i].current].current],
-				listAllies[i].x + listAllies[i].listDefeatXDiff[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].y + listAllies[i].listDefeatYDiff[listAllies[i].listSprites[listAllies[i].current].current]+45, 
-				listAllies[i].listDefeatX[listAllies[i].listSprites[listAllies[i].current].current], 
-				listAllies[i].listDefeatY[listAllies[i].listSprites[listAllies[i].current].current]);
-		}
+		ScreenContext.drawImage(listAllies[i].getCurrentFrame(),
+		listAllies[i].x + listAllies[i].getCurrentXDiff(), 
+		listAllies[i].y + listAllies[i].getCurrentYDiff()+45, 
+		listAllies[i].getCurrentX(), 
+		listAllies[i].getCurrentY());
 	}
 	
-	for(i=0; i<listFactories.length; i++){
-		switch(listFactories[i].current){
-		case 0: ScreenContext.drawImage(listFactories[i].listSprites[listFactories[i].current].listImage[listFactories[i].listSprites[listFactories[i].current].current],
-				listFactories[i].x + listFactories[i].listStandXDiff[listFactories[i].listSprites[listFactories[i].current].current], 
-				listFactories[i].y + listFactories[i].listStandYDiff[listFactories[i].listSprites[listFactories[i].current].current]+45, 
-				listFactories[i].listStandX[listFactories[i].listSprites[listFactories[i].current].current], 
-				listFactories[i].listStandY[listFactories[i].listSprites[listFactories[i].current].current]);
-				break;
-		case 1: ScreenContext.drawImage(listFactories[i].listSprites[listFactories[i].current].listImage[listFactories[i].listSprites[listFactories[i].current].current],
-				listFactories[i].x + listFactories[i].listDefeatXDiff[listFactories[i].listSprites[listFactories[i].current].current], 
-				listFactories[i].y + listFactories[i].listDefeatYDiff[listFactories[i].listSprites[listFactories[i].current].current]+45, 
-				listFactories[i].listDefeatX[listFactories[i].listSprites[listFactories[i].current].current], 
-				listFactories[i].listDefeatY[listFactories[i].listSprites[listFactories[i].current].current]);
-		}
+		
+	for(i=0; i<listEnemies.length; i++){
+		ScreenContext.drawImage(listEnemies[i].getCurrentFrame(),
+		listEnemies[i].x + listEnemies[i].getCurrentXDiff(), 
+		listEnemies[i].y + listEnemies[i].getCurrentYDiff()+45, 
+		listEnemies[i].getCurrentX(), 
+		listEnemies[i].getCurrentY());
 	}
 	
 	for(i=0;i<listEnemies.length;i++){
@@ -655,7 +617,9 @@ function draw(){
 	}else if(selectedBuild != null && currentX != -1 && currentY != -1){
 		ScreenContext.drawImage(listImgBuild[selectedBuild-1], currentX+5, currentY+50, 80, 80);
 	}
-	
+}
+
+function drawUI(){
 	ScreenContext.drawImage(imgItemMenu, 0, 675, 1560, 130);
 	ScreenContext.drawImage(imgBuildMenu, 1440, 45, 120, 630);
 	ScreenContext.fillStyle = "black";
@@ -668,21 +632,10 @@ function draw(){
 	ScreenContext.fillRect(1460, 465, 80, 80);
 	ScreenContext.fillRect(1460, 565, 80, 80);
 	
-	ScreenContext.fillRect(40,695,80,80);
-	ScreenContext.fillRect(140,695,80,80);
-	ScreenContext.fillRect(240,695,80,80);
-	ScreenContext.fillRect(340,695,80,80);
-	ScreenContext.fillRect(440,695,80,80);
-	ScreenContext.fillRect(540,695,80,80);
-	ScreenContext.fillRect(640,695,80,80);
-	ScreenContext.fillRect(740,695,80,80);
-	ScreenContext.fillRect(840,695,80,80);
-	ScreenContext.fillRect(940,695,80,80);
-	ScreenContext.fillRect(1040,695,80,80);
-	ScreenContext.fillRect(1140,695,80,80);
-	ScreenContext.fillRect(1240,695,80,80);
-	ScreenContext.fillRect(1340,695,80,80);
-	ScreenContext.fillRect(1440,695,80,80);
+	for(i=0;i<10;i++){
+		//ScreenContext.drawImage(plate,40+(i*100),695,80,80);
+		ScreenContext.fillRect(40+(i*100),695,80,80);
+	}
 	
 	for(i=0;i<listImgItemIcons.length;i++){
 		if(selectedItem-1 != i){
@@ -695,37 +648,57 @@ function draw(){
 			ScreenContext.drawImage(listImgBuildIcons[i], 1460, (i*100)+65, 80, 80);
 		}
 	}
-	ScreenContext.fillStyle = "white";
+
 	for(i=1;i<=Object.keys(allyList).length;i++){
 		if(itemStats[allyList[i].name].available == 0)
 			ScreenContext.fillStyle = "red";
 		else
 			ScreenContext.fillStyle = "white";
 		ScreenContext.fillText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*100)+42, 710);
+		ScreenContext.strokeText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*100)+42, 710);
 	}
 	
 	for(i=1;i<=Object.keys(factoryList).length;i++){
-		if(gold<buildStats[factoryList[i].name].cost)
+		if(gameStats["gold"]<buildStats[factoryList[i].name].cost)
 			ScreenContext.fillStyle = "red";
 		else
 			ScreenContext.fillStyle = "white";
 		ScreenContext.fillText(buildStats[factoryList[i].name].cost, 1460, ((i-1)*100)+65+80);
+		ScreenContext.strokeText(buildStats[factoryList[i].name].cost, 1460, ((i-1)*100)+65+80);
 	}
 	
 	ScreenContext.fillStyle = "white";
-	ScreenContext.fillText("Gold: " + gold, 10, 28);
-	ScreenContext.fillText("Spawn Time Left: " + timeleft, 130, 28);
-	ScreenContext.fillText("<3: " + Math.floor(life), 1340, 28);
+	ScreenContext.fillText("Gold: " + gameStats["gold"], 10, 28);
+	ScreenContext.fillText("Spawn Time Left: " + gameStats["timeleft"], 130, 28);
+	ScreenContext.fillText("<3: " + Math.floor(gameStats["life"]), 1340, 28);
+}
+
+function drawMenu(){
+}
+
+function drawGameOver(){
+	ScreenContext.globalAlpha = 0.6;
+	ScreenContext.drawImage(document.getElementById("grayoverlay"), 0, 0, 1560, 790);
+	ScreenContext.font = "200px Stencil";
+	ScreenContext.globalAlpha = 1;
+	ScreenContext.fillText("THANKS OBAMA", 20, 400);
+	ScreenContext.fillStyle = "black";
+	ScreenContext.strokeText("THANKS OBAMA", 20, 400);
+}
+
+function draw(){
+	ScreenContext.font = "20px Stencil";
+	/*(i=0;i<7;i++){
+		ScreenContext.drawImage(listImgLane[i], 0, i*90+45, 1440, 90);
+	}*/
+	ScreenContext.drawImage(floor, 0, 45, 1440, 630);
+	
+	
+	drawSprites();	
+	drawUI();
 	
 	if(isGameOver){
-		ScreenContext.globalAlpha = 0.6;
-		ScreenContext.drawImage(document.getElementById("grayoverlay"), 0, 0, 1560, 790);
-		ScreenContext.font = "200px Stencil";
-		ScreenContext.globalAlpha = 1;
-		ScreenContext.fillStyle = "white";
-		ScreenContext.fillText("THANKS OBAMA", 20, 400);
-		ScreenContext.fillStyle = "black";
-		ScreenContext.strokeText("THANKS OBAMA", 20, 400);
+		drawGameOver();
 	}
 	
 }

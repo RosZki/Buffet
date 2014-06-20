@@ -33,4 +33,36 @@ Factory = function(data, x, y){
 		}
 	}
 	
+	this.getCurrentFrame = function(){
+		return this.listSprites[this.current].getCurrentFrame();
+	}
+	
+	this.getCurrentX = function(){
+		switch(this.current){
+			case 0: return this.listStandX[this.listSprites[this.current].current];
+			case 1: return this.listDefeatX[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentY = function(){
+		switch(this.current){
+			case 0: return this.listStandY[this.listSprites[this.current].current];
+			case 1: return this.listDefeatY[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentXDiff = function(){
+		switch(this.current){
+			case 0: return this.listStandXDiff[this.listSprites[this.current].current];
+			case 1: return this.listDefeatXDiff[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentYDiff = function(){
+		switch(this.current){
+			case 0: return this.listStandYDiff[this.listSprites[this.current].current];
+			case 1: return this.listDefeatYDiff[this.listSprites[this.current].current];
+		}
+	}
+	
 }

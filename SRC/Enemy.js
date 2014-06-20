@@ -39,4 +39,40 @@ function Enemy(data, lane, effect){
 		this.current = action;
 	}
 	
+	this.getCurrentFrame = function(){
+		return this.listSprites[this.current].getCurrentFrame();
+	}
+	
+	this.getCurrentX = function(){
+		switch(this.current){
+			case 0: return this.listMoveX[this.listSprites[this.current].current];
+			case 1: return this.listAttackX[this.listSprites[this.current].current];
+			case 2: return this.listDefeatX[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentY = function(){
+		switch(this.current){
+			case 0: return this.listMoveY[this.listSprites[this.current].current];
+			case 1: return this.listAttackY[this.listSprites[this.current].current];
+			case 2: return this.listDefeatY[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentXDiff = function(){
+		switch(this.current){
+			case 0: return this.listMoveXDiff[this.listSprites[this.current].current];
+			case 1: return this.listAttackXDiff[this.listSprites[this.current].current];
+			case 2: return this.listDefeatXDiff[this.listSprites[this.current].current];
+		}
+	}
+	
+	this.getCurrentYDiff = function(){
+		switch(this.current){
+			case 0: return this.listMoveYDiff[this.listSprites[this.current].current];
+			case 1: return this.listAttackYDiff[this.listSprites[this.current].current];
+			case 2: return this.listDefeatYDiff[this.listSprites[this.current].current];
+		}
+	}
+	
 }
