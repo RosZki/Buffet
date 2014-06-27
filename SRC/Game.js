@@ -3,22 +3,31 @@
 
 	var imgItemMenu;
 	var imgBuildMenu;
-	var floor;
+	var imgStatusMenu;
+	var background;
 	
 	var listEnemies = new Array();
 	var listProjectiles = new Array();
 	var listAllies = new Array();
 	var listFactories = new Array();
-	var listImgLane = new Array();
+	var listStuff = new Array();
 	var listImgItems = new Array();
 	var listImgItemIcons = new Array();
 	var listImgBuild = new Array();
 	var listImgBuildIcons = new Array();
+	var listFields = new Array();
 	
+	var indicator;
+	var selectedDelete;
 	var selectedItem;
 	var selectedBuild;
+	var selectedUnit;
 	var currentItemPage = 0;
 	var currentBuildPage = 0;
+	
+	var hasSpawned;
+	var timetotal;
+	var lifetotal;
 	
 	var currentX = -1;
 	var currentY = -1;
@@ -33,12 +42,12 @@ function init(){
 	
 	imgItemMenu = document.getElementById("itemmenu");
 	imgBuildMenu = document.getElementById("buildmenu");
-	floor = document.getElementById("floor");
-	ScreenContext.font = "20px Stencil";
-	for(i=0; i<7; i++){
-		listImgLane.push(new Image());
-		listImgLane[i].src = "IMG/UI/Lane" + (i+1) + ".png";
-	}
+	imgStatusMenu = document.getElementById("statusmenu");
+	background = document.getElementById("background");
+	
+	timetotal = gameStats["timeleft"];
+	lifetotal = gameStats["life"];
+	hasSpawned = false;
 	
 	for(i=1;i<=Object.keys(allyList).length; i++){
 		listImgItemIcons.push(new Image());
@@ -53,7 +62,7 @@ function init(){
 		listImgBuild.push(new Image());
 		listImgBuild[i-1].src = factoryList[i].listStand[0];
 	}
-	
+	indicator = new Stuff(stuffList["indicator"],0,0);
 	ScreenSpace.onclick = onClick;
 	ScreenSpace.onmousemove = onMove;
 	id = setInterval(loop, 1000/30);
@@ -61,27 +70,25 @@ function init(){
 }
 
 function addKeyboardShortcuts(){
-	shortcut.add("1", function(){selectItem(1);});
-	shortcut.add("2", function(){selectItem(2);});
-	shortcut.add("3", function(){selectItem(3);});
-	shortcut.add("4", function(){selectItem(4);});
-	shortcut.add("Q", function(){selectItem(5);});
-	shortcut.add("W", function(){selectItem(6);});
-	shortcut.add("E", function(){selectItem(7);});
-	shortcut.add("R", function(){selectItem(8);});
-	shortcut.add("A", function(){selectItem(9);});
-	shortcut.add("S", function(){selectItem(10);});
-	shortcut.add("D", function(){selectItem(11);});
-	shortcut.add("F", function(){selectItem(12);});
-	//shortcut.add("Z", function(){selectItem(13);});
-	//shortcut.add("X", function(){selectItem(14);});
-	//shortcut.add("C", function(){selectItem(15);});
-	shortcut.add("Z", function(){selectBuild(1);});
-	shortcut.add("X", function(){selectBuild(2);});
-	shortcut.add("C", function(){selectBuild(3);});
-	shortcut.add("V", function(){selectBuild(4);});
-	shortcut.add("B", function(){selectBuild(5);});
-	shortcut.add("G", function(){selectBuild(6);});
+	shortcut.add(shortcutList["item"][1], function(){selectItem(1);});
+	shortcut.add(shortcutList["item"][2], function(){selectItem(2);});
+	shortcut.add(shortcutList["item"][3], function(){selectItem(3);});
+	shortcut.add(shortcutList["item"][4], function(){selectItem(4);});
+	shortcut.add(shortcutList["item"][5], function(){selectItem(5);});
+	shortcut.add(shortcutList["item"][6], function(){selectItem(6);});
+	shortcut.add(shortcutList["item"][7], function(){selectItem(7);});
+	shortcut.add(shortcutList["item"][8], function(){selectItem(8);});
+	shortcut.add(shortcutList["item"][9], function(){selectItem(9);});
+	shortcut.add(shortcutList["item"][10], function(){selectItem(10);});
+	shortcut.add(shortcutList["item"][11], function(){selectItem(11);});
+	shortcut.add(shortcutList["item"][12], function(){selectItem(12);});
+	shortcut.add(shortcutList["build"][1], function(){selectBuild(1);});
+	shortcut.add(shortcutList["build"][2], function(){selectBuild(2);});
+	shortcut.add(shortcutList["build"][3], function(){selectBuild(3);});
+	shortcut.add(shortcutList["build"][4], function(){selectBuild(4);});
+	shortcut.add(shortcutList["build"][5], function(){selectBuild(5);});
+	shortcut.add(shortcutList["delete"][1], function(){selectDelete(1);});
+	shortcut.add(shortcutList["delete"][2], function(){selectDelete(2);});
 	
 }
 
@@ -89,6 +96,7 @@ function selectItem(x){
 	if(selectedItem != x){
 		selectedItem = x + (currentItemPage * 15);
 		selectedBuild = null;
+		selectedDelete = null;
 	}
 	else
 		selectedItem = null;
@@ -98,9 +106,37 @@ function selectBuild(x){
 	if(selectedBuild != x){
 			selectedBuild = x + (currentBuildPage * 15);
 			selectedItem = null;
+			selectedDelete = null;
 	}
 	else
 		selectedBuild = null;
+}
+
+function selectUnit(x,y){
+	for(i=0;i<listAllies.length;i++){
+		if(isInside(listAllies[i].x, listAllies[i].y+45, 90, 90, x, y)){
+			selectedUnit = listAllies[i];
+			indicator.x = listAllies[i].x;
+			indicator.y = listAllies[i].y;
+		}
+	}
+	for(i=0;i<listFactories.length;i++){
+		if(isInside(listFactories[i].x, listFactories[i].y+45, 90, 90, x, y)){
+			selectedUnit = listFactories[i];
+			indicator.x = listFactories[i].x;
+			indicator.y = listFactories[i].y;
+		}
+	}
+}
+
+function selectDelete(x){
+	if(selectedDelete != x){
+			selectedDelete = x;
+			selectedItem = null;
+			selectedBuild = null;
+	}
+	else
+		selectedDelete = null;
 }
 
 function getGrid(x){
@@ -108,59 +144,34 @@ function getGrid(x){
 }
 
 function onClick(e){
-	if(isInside(40, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(1);
-	}else if(isInside(140, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(2);
-	}else if(isInside(240, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(3);
-	}else if(isInside(340, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(4);
-	}else if(isInside(440, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(5);
-	}else if(isInside(540, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(6);
-	}else if(isInside(640, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(7);
-	}else if(isInside(740, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(8);
-	}else if(isInside(840, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(9);
-	}else if(isInside(940, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(10);
-	}else if(isInside(1040, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(11);
-	}else if(isInside(1140, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(12);
-	}else if(isInside(1240, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(13);
-	}else if(isInside(1340, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(14);
-	}else if(isInside(1440, 695, 90, 90, e.pageX, e.pageY)){
-		selectItem(15);
-	}else if(isInside(1460, 65, 80, 80, e.pageX,e.pageY)){
+	console.log(e.pageX + " , " + e.pageY);
+	if(isInside(1465,150, 90, 90, e.pageX, e.pageY)){
 		selectBuild(1);
-	}else if(isInside(1460, 165, 80, 80, e.pageX,e.pageY)){
-		selectBuild(2);
-	}else if(isInside(1460, 265, 80, 80, e.pageX,e.pageY)){
-		selectBuild(3);
-	}else if(isInside(1460, 365, 80, 80, e.pageX,e.pageY)){
-		selectBuild(4);
-	}else if(isInside(1460, 465, 80, 80, e.pageX,e.pageY)){
-		selectBuild(5);
-	}else if(isInside(1460, 565, 80, 80, e.pageX,e.pageY)){
-		selectBuild(6);
+	}
+	else if(isInside(190,700, 90, 90, e.pageX, e.pageY)){
+		selectItem(1);
+	}
+	else if(isInside(280,700, 90, 90, e.pageX, e.pageY)){
+		selectItem(2);
 	}
 	else if(isInside(0,45,1440,630,e.pageX,e.pageY)){
-		if(selectedItem != null || selectedBuild != null){
+		selectUnit(e.pageX, e.pageY);
+		if(selectedDelete != null)
+			remove();
+		else if(selectedItem != null || selectedBuild != null)
 			build();
-		}
+	}
+	else if(isInside(1425, 680, 123, 52, e.pageX, e.pageY)){
+		selectDelete(1);
+	}
+	else if(isInside(1425, 738, 123, 52, e.pageX, e.pageY)){
+		selectDelete(2);
 	}
 }
 
 function onMove(e){
 	if(isInside(0,45,1440,630,e.pageX,e.pageY)){
-		currentX = getGrid(e.pageX)*90;
+		currentX = getGrid(e.pageX-10)*90;
 		currentY = getGrid(e.pageY-45)*90;
 	}
 	else{
@@ -204,23 +215,61 @@ function randomSpawn(){
 	var lane = random(1,7);
 	var monster = random(1,3);
 	var effect = random(1,3);
-	spawn(monster, lane, effect);
+	if(enemyList[monster].hitEffect == null)
+		spawn(monster, lane, effect);
+	else
+		spawn(monster, lane, enemyList[monster].hitEffect)
 }
 
 function spawn(monster, lane, effect){
 	listEnemies.push(new Enemy(enemyList[monster], lane, effectList[effect]));
 }
 
-function startWave(time, totaltime){
-	isGameOver = false;
-	counter = 0;
-	gameStats["timeleft"] = totaltime;
-	gameStats["spawntime"] = time;
-	gameStats["spawncounter"] = 0;
-}
-
-function stopWave(){
-	gameStats["timeleft"] = 0;
+function remove(){
+	if(selectedDelete != null){
+		for(i=0;i<listAllies.length;i++){
+			if(isCollide(listAllies[i].x,listAllies[i].y,90,90, currentX, currentY,90,90)){
+				if(selectedDelete == 1){
+					tempHealth = listAllies[i].health*2;
+					if(gameStats["life"] + tempHealth >= lifetotal)
+						gameStats["life"] = lifetotal;
+					else
+						gameStats["life"] += tempHealth;
+					listStuff.push(new Stuff(stuffList["heart"], listAllies[i].x, listAllies[i].y));
+				}else{
+					tempGold = Math.floor(listAllies[i].health*0.2);
+					if(gameStats["gold"] + tempGold >= gameStats["maxgold"])
+						gameStats["gold"] = gameStats["maxgold"];
+					else
+						gameStats["gold"] += tempGold;
+					listStuff.push(new Stuff(stuffList["coin"], listAllies[i].x, listAllies[i].y));
+				}
+				listAllies.splice(i,1);
+				selectedUnit = null;
+			}
+		}
+		for(i=0;i<listFactories.length;i++){
+			if(isCollide(listFactories[i].x,listFactories[i].y,90,90, currentX, currentY,90,90)){
+				if(selectedDelete == 1){
+					tempHealth = listFactories[i].health*2;
+					if(gameStats["life"] + tempHealth >= lifetotal)
+						gameStats["life"] = lifetotal;
+					else
+						gameStats["life"] += tempHealth;
+					listStuff.push(new Stuff(stuffList["heart"], listFactories[i].x, listFactories[i].y));
+				}else{
+					tempGold = listFactories[i].health*2;
+					if(gameStats["gold"] + tempGold >= gameStats["maxgold"])
+						gameStats["gold"] = gameStats["maxgold"];
+					else
+						gameStats["gold"] += tempGold;
+					listStuff.push(new Stuff(stuffList["coin"], listFactories[i].x, listFactories[i].y));
+				}
+				listFactories.splice(i,1);
+				selectedUnit = null;
+			}
+		}
+	}
 }
 
 function build(){
@@ -272,8 +321,8 @@ function build(){
 				}
 				gameStats["gold"]-=buildStats[factoryList[selectedBuild].name].cost;
 				buildStats[factoryList[selectedBuild].name].cost+=Math.floor(buildStats[factoryList[selectedBuild].name].cost*0.75);
-				if(buildStats[factoryList[selectedBuild].name].cost > 99999){
-					buildStats[factoryList[selectedBuild].name].cost = 99999;
+				if(buildStats[factoryList[selectedBuild].name].cost > gameStats["maxgold"]){
+					buildStats[factoryList[selectedBuild].name].cost = gameStats["maxgold"];
 				}
 				selectedBuild = null;		
 			}
@@ -287,16 +336,11 @@ function update(){
 	}
 	else{
 		if(gameStats["timeleft"] > 0){
-			if(counter == 30){
-				gameStats["timeleft"]--;
-				counter = 0;
-			}
-			else{
-				counter++;
-			}
-			if(gameStats["timeleft"] == 10){
+			gameStats["timeleft"]-=1/30;
+			if(gameStats["timeleft"] <= 10 && !hasSpawned){
 				gameStats["spawncounter"] = 0;
 				gameStats["spawntime"] = 10;
+				hasSpawned = true;
 			}
 			if(gameStats["spawncounter"] == gameStats["spawntime"]){
 				randomSpawn();
@@ -304,6 +348,31 @@ function update(){
 			}
 			else{
 				gameStats["spawncounter"]++;
+			}
+		}
+		if(selectedUnit != null){
+			if(selectedUnit.health <= 0)
+				selectedUnit = null;
+		}
+		indicator.sprite.next();
+		for(i=0;i<listFields.length;i++){
+			if(listFields[i].duration == 0){
+				listFields.splice(i,1);
+			}
+			else{
+				listFields[i].duration--;
+				for(j=0;j<listEnemies.length;j++){
+					listFields[i].activateEffect(listEnemies[j]);
+				}
+			}
+		}
+		for(i=0; i<listStuff.length;i++){
+			if(listStuff[i].y <= 0 - listStuff[i].getCurrentYDiff()){
+				listStuff.splice(i,1);
+			}
+			else{
+				listStuff[i].sprite.next()
+				listStuff[i].y-=15;
 			}
 		}
 		for(i=0; i<listFactories.length; i++){
@@ -351,7 +420,8 @@ function update(){
 					if(isCollide(listProjectiles[i].x, listProjectiles[i].y,
 					listProjectiles[i].listX[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
 					listProjectiles[i].listY[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
-					listEnemies[j].x-20, listEnemies[j].y, 90, 90)){
+					listEnemies[j].x, listEnemies[j].y, listProjectiles[i].getCurrentX(),listProjectiles[i].getCurrentY())
+					&& listEnemies[j].current != 2){
 						listProjectiles[i].switchAction(1);	
 						listEnemies[j].health-=listProjectiles[i].attack;
 					}
@@ -372,8 +442,9 @@ function update(){
 				else{
 					if(listEnemies[i].listSprites[listEnemies[i].current].current == listEnemies[i].listSprites[listEnemies[i].current].listImage.length-1){
 						gameStats["gold"]+=listEnemies[i].gold;
-						if(gameStats["gold"]>99999)
-							gameStats["gold"] = 99999;
+						if(gameStats["gold"]>gameStats["maxgold"])
+							gameStats["gold"] = gameStats["maxgold"];
+						listStuff.push(new Stuff(stuffList["coin"], listEnemies[i].x, listEnemies[i].y));
 						listEnemies.splice(i,1);
 						hasEnemyDeath = true;
 					}
@@ -413,6 +484,10 @@ function update(){
 					listAllies[i].switchAction(2);
 				}
 				else{
+					if(listAllies[i].type == 3 && listAllies[i].field != null){
+						if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-2)
+							listFields.push(new Field(fieldList[listAllies[i].field],listAllies[i].x, listAllies[i].y));
+					}
 					if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-1){
 						listAllies.splice(i,1);
 						hasAllyDeath = true;
@@ -455,8 +530,7 @@ function update(){
 					listAllies[i].switchAction(1);
 					for(j=0;j<listAllies[i].release.length;j++){
 						if (listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].release[j] && listAllies[i].listSprites[listAllies[i].current].counter == 0){
-							//milotrial = random(-10,10);
-							milotrial = 0;
+							milotrial = random(-10,10);
 							listProjectiles.push(new Projectile(listAllies[i].projectiletype, listAllies[i].x-45, listAllies[i].y+milotrial));
 						}
 					}
@@ -479,7 +553,8 @@ function update(){
 						break;
 				}
 				for(j=0;j<listAllies.length;j++){
-					if(isCollide(listAllies[j].x, listAllies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
+					if(isCollide(listAllies[j].x, listAllies[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) ||
+					isCollide(listAllies[j].x, listAllies[j].y, 90,90, listEnemies[i].x, listEnemies[i].y, 90, 90)){
 						for(k=0;k<listEnemies[i].frameHit.length;k++){
 							if(listEnemies[i].listSprites[1].current == listEnemies[i].frameHit[k] && listEnemies[i].listSprites[1].counter == 0)
 								listAllies[j].health-=listEnemies[i].attack;
@@ -487,7 +562,8 @@ function update(){
 					}
 				}
 				for(j=0;j<listFactories.length;j++){
-					if(isCollide(listFactories[j].x, listFactories[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h)){
+					if(isCollide(listFactories[j].x, listFactories[j].y, 90,90, tempRect.x, tempRect.y, tempRect.w, tempRect.h) ||
+					isCollide(listFactories[j].x, listFactories[j].y, 90,90, listEnemies[i].x, listEnemies[i].y, 90, 90)){
 						for(k=0;k<listEnemies[i].frameHit.length;k++){
 							if(listEnemies[i].listSprites[1].current == listEnemies[i].frameHit[k] && listEnemies[i].listSprites[1].counter == 0)
 								listFactories[j].health-=listEnemies[i].attack;
@@ -519,11 +595,31 @@ function update(){
 					}
 				}
 			}
+			else if (listAllies[i].type == 2){
+				for(j=0;j<listEnemies.length;j++){
+					if(isCollide(listEnemies[j].x, listEnemies[j].y, 90,90, listAllies[i].x, listAllies[i].y, 90, 90)){
+						for(k=0;k<listAllies[i].release.length;k++){
+							if(listAllies[i].listSprites[1].current == listAllies[i].release[k] && listAllies[i].listSprites[1].counter == 0){
+								listEnemies[j].health-=listAllies[i].projectiletype.attack;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }
 
 function drawSprites(){
+
+	for(i=0; i<listFields.length; i++){
+		ScreenContext.drawImage(listFields[i].image,
+		listFields[i].x + listFields[i].xDiff, 
+		listFields[i].y + listFields[i].yDiff+45, 
+		listFields[i].sizeX, 
+		listFields[i].sizeY);
+	}
+	
 	for(i=0; i<listFactories.length; i++){
 		ScreenContext.drawImage(listFactories[i].getCurrentFrame(),
 		listFactories[i].x + listFactories[i].getCurrentXDiff(), 
@@ -539,7 +635,6 @@ function drawSprites(){
 		listAllies[i].getCurrentX(), 
 		listAllies[i].getCurrentY());
 	}
-	
 		
 	for(i=0; i<listEnemies.length; i++){
 		ScreenContext.drawImage(listEnemies[i].getCurrentFrame(),
@@ -549,66 +644,78 @@ function drawSprites(){
 		listEnemies[i].getCurrentY());
 	}
 	
-	for(i=0;i<listEnemies.length;i++){
-		if(listEnemies[i].current == 1){
-			if(listEnemies[i].listSprites[1].current >= listEnemies[i].frameHit[0] && listEnemies[i].listSprites[1].current <= listEnemies[i].frameHit[1]){
-				var tempX, tempY, sizeX, sizeY;
-				switch(listEnemies[i].range){
-					case 1:	tempX = 90;
-							tempY = 0;
-							sizeX = 80;
-							sizeY = 80;
-							break;
-					case 2:	tempX = 90;
-							tempY = 0;
-							sizeX = 160;
-							sizeY = 80;
-							break;
-					case 3:	tempX = 90;
-							tempY = -90;
-							sizeX = 80;
-							sizeY = 270;
-							break;
-				}
-				ScreenContext.drawImage(listEnemies[i].hitEffectSprite.listImage[listEnemies[i].hitEffectSprite.current],
-				listEnemies[i].x + tempX + 5, listEnemies[i].y + tempY + 5 + 45, sizeX, sizeY);
-			}
-		}
+	for(i=0; i<listStuff.length; i++){
+		ScreenContext.drawImage(listStuff[i].getCurrentFrame(),
+		listStuff[i].x + listStuff[i].getCurrentXDiff(), 
+		listStuff[i].y + listStuff[i].getCurrentYDiff()+45, 
+		listStuff[i].getCurrentX(), 
+		listStuff[i].getCurrentY());
 	}
 	
 	for(i=0;i<listAllies.length;i++){
 		if(listAllies[i].current == 1 && listAllies[i].type == 1){
-			if(listAllies[i].listSprites[1].current >= listAllies[i].frameHit[0] && listAllies[i].listSprites[1].current <= listAllies[i].frameHit[1]){
-				var tempX, tempY, sizeX, sizeY;
-				switch(listAllies[i].range){
-					case 1:	tempX = -90;
-							tempY = 0;
-							sizeX = 80;
-							sizeY = 80;
-							break;
-					case 2:	tempX = -90;
-							tempY = 0;
-							sizeX = 160;
-							sizeY = 80;
-							break;
-					case 3:	tempX = -90;
-							tempY = -90;
-							sizeX = 80;
-							sizeY = 270;
-							break;
+			for(k=0;k<listAllies[i].frameHit.length;k++){
+				if(listAllies[i].listSprites[1].current == listAllies[i].frameHit[k]){
+					var tempX, tempY, sizeX, sizeY;
+					switch(listAllies[i].range){
+						case 1:	tempX = -90;
+								tempY = 0;
+								sizeX = 80;
+								sizeY = 80;
+								break;
+						case 2:	tempX = -90;
+								tempY = 0;
+								sizeX = 160;
+								sizeY = 80;
+								break;
+						case 3:	tempX = -90;
+								tempY = -90;
+								sizeX = 80;
+								sizeY = 270;
+								break;
+					}
+					ScreenContext.drawImage(listAllies[i].hitEffectSprite.listImage[listAllies[i].hitEffectSprite.current],
+					listAllies[i].x + tempX + 5, listAllies[i].y + tempY + 5 + 45, sizeX, sizeY);
 				}
-				ScreenContext.drawImage(listAllies[i].hitEffectSprite.listImage[listAllies[i].hitEffectSprite.current],
-				listAllies[i].x + tempX + 5, listAllies[i].y + tempY + 5 + 45, sizeX, sizeY);
+			}
+		}
+	}
+	
+	for(i=0;i<listEnemies.length;i++){
+		if(listEnemies[i].current == 1){
+			for(k=0;k<listEnemies[i].frameHit.length;k++){
+				if(listEnemies[i].listSprites[1].current == listEnemies[i].frameHit[k]){
+					var tempX, tempY, sizeX, sizeY;
+					switch(listEnemies[i].range){
+						case 1:	tempX = 90;
+								tempY = 0;
+								sizeX = 80;
+								sizeY = 80;
+								break;
+						case 2:	tempX = 90;
+								tempY = 0;
+								sizeX = 160;
+								sizeY = 80;
+								break;
+						case 3:	tempX = 90;
+								tempY = -90;
+								sizeX = 80;
+								sizeY = 270;
+								break;
+					}
+					ScreenContext.drawImage(listEnemies[i].hitEffectSprite.listImage[listEnemies[i].hitEffectSprite.current],
+					listEnemies[i].x + tempX + 5, listEnemies[i].y + tempY + 5 + 45, sizeX, sizeY);
+				}
 			}
 		}
 	}
 	
 	for(i=0;i<listProjectiles.length;i++){
-		ScreenContext.drawImage(listProjectiles[i].listSprites[listProjectiles[i].current].listImage[listProjectiles[i].listSprites[listProjectiles[i].current].current], 
-		listProjectiles[i].x, 
-		listProjectiles[i].y + 45, 
-		listProjectiles[i].listX[listProjectiles[i].listSprites[listProjectiles[i].current].current],
-		listProjectiles[i].listY[listProjectiles[i].listSprites[listProjectiles[i].current].current]
+		ScreenContext.drawImage(listProjectiles[i].getCurrentFrame(), 
+		listProjectiles[i].x + listProjectiles[i].getCurrentXDiff(), 
+		listProjectiles[i].y + listProjectiles[i].getCurrentYDiff() + 45, 
+		listProjectiles[i].getCurrentX(),
+		listProjectiles[i].getCurrentY()
 		);
 	}
 	
@@ -617,35 +724,53 @@ function drawSprites(){
 	}else if(selectedBuild != null && currentX != -1 && currentY != -1){
 		ScreenContext.drawImage(listImgBuild[selectedBuild-1], currentX+5, currentY+50, 80, 80);
 	}
+	else if(selectedDelete == 1 && currentX != -1 && currentY != -1){
+		ScreenContext.drawImage(document.getElementById("spoon"), currentX+15, currentY+70, 101, 82);
+	}
+	else if(selectedDelete == 2 && currentX != -1 && currentY != -1){
+		ScreenContext.drawImage(document.getElementById("fork"), currentX+15, currentY+70, 101, 82);
+	}
+	
+	if(selectedUnit != null){
+		ScreenContext.drawImage(indicator.getCurrentFrame(), 
+		indicator.x + indicator.getCurrentXDiff(), 
+		indicator.y + indicator.getCurrentYDiff()+45, 
+		indicator.getCurrentX(), indicator.getCurrentY());
+	}
+	
 }
 
 function drawUI(){
-	ScreenContext.drawImage(imgItemMenu, 0, 675, 1560, 130);
+	ScreenContext.drawImage(imgItemMenu, 0, 675, 1560, 120);
 	ScreenContext.drawImage(imgBuildMenu, 1440, 45, 120, 630);
 	ScreenContext.fillStyle = "black";
-	ScreenContext.fillRect(0,0, 1560,45);
+	ScreenContext.drawImage(imgStatusMenu,0,0, 1560,45);
 	
-	ScreenContext.fillRect(1460, 65, 80, 80);
-	ScreenContext.fillRect(1460, 165, 80, 80);
-	ScreenContext.fillRect(1460, 265, 80, 80);
-	ScreenContext.fillRect(1460, 365, 80, 80);
-	ScreenContext.fillRect(1460, 465, 80, 80);
-	ScreenContext.fillRect(1460, 565, 80, 80);
-	
-	for(i=0;i<10;i++){
-		//ScreenContext.drawImage(plate,40+(i*100),695,80,80);
-		ScreenContext.fillRect(40+(i*100),695,80,80);
-	}
-	
+	if(selectedDelete == 1)
+		ScreenContext.drawImage(document.getElementById("heartbutton"), 1425, 680, 123, 52);
+	else
+		ScreenContext.drawImage(document.getElementById("heartbuttonwithspoon"), 1425, 680, 123, 52);
+
+	if(selectedDelete == 2)
+		ScreenContext.drawImage(document.getElementById("goldbutton"), 1425, 738, 123, 52);
+	else
+		ScreenContext.drawImage(document.getElementById("goldbuttonwithfork"), 1425, 738, 123, 52);
+		
+		
 	for(i=0;i<listImgItemIcons.length;i++){
+		ScreenContext.drawImage(document.getElementById("plate"), (i*92)+175, 695, 90, 90);
 		if(selectedItem-1 != i){
-			ScreenContext.drawImage(listImgItemIcons[i], (i*100)+40, 695, 80, 80);
+			ScreenContext.drawImage(listImgItemIcons[i], (i*92)+182, 695, 80, 80);
 		}
 	}
 	
 	for(i=0;i<listImgBuildIcons.length;i++){
+		if(gameStats["gold"]<buildStats[factoryList[i+1].name].cost)
+			ScreenContext.drawImage(document.getElementById("nobuild"), 1455, ((i+1)*100)+40, 90, 90);
+		else
+			ScreenContext.drawImage(document.getElementById("okbuild"), 1455, ((i+1)*100)+40, 90, 90);
 		if(selectedBuild-1 != i){
-			ScreenContext.drawImage(listImgBuildIcons[i], 1460, (i*100)+65, 80, 80);
+			ScreenContext.drawImage(listImgBuildIcons[i], 1460, ((i+1)*100)+45, 80, 80);
 		}
 	}
 
@@ -654,8 +779,8 @@ function drawUI(){
 			ScreenContext.fillStyle = "red";
 		else
 			ScreenContext.fillStyle = "white";
-		ScreenContext.fillText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*100)+42, 710);
-		ScreenContext.strokeText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*100)+42, 710);
+		ScreenContext.fillText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*92)+182, 778);
+		ScreenContext.strokeText(itemStats[allyList[i].name].available + "/" + itemStats[allyList[i].name].total, ((i-1)*92)+182, 778);
 	}
 	
 	for(i=1;i<=Object.keys(factoryList).length;i++){
@@ -663,14 +788,52 @@ function drawUI(){
 			ScreenContext.fillStyle = "red";
 		else
 			ScreenContext.fillStyle = "white";
-		ScreenContext.fillText(buildStats[factoryList[i].name].cost, 1460, ((i-1)*100)+65+80);
-		ScreenContext.strokeText(buildStats[factoryList[i].name].cost, 1460, ((i-1)*100)+65+80);
+		ScreenContext.fillText(buildStats[factoryList[i].name].cost, 1455, (i*100)+45+80);
+		ScreenContext.strokeText(buildStats[factoryList[i].name].cost, 1455, (i*100)+45+80);
 	}
 	
+	for(i=1;i<=Object.keys(shortcutList["build"]).length;i++){
+		ScreenContext.fillStyle = "white";
+		ScreenContext.fillText(shortcutList["build"][i], 1457, (i*97)+60);
+		ScreenContext.strokeText(shortcutList["build"][i], 1457, (i*97)+60);
+	}
+	
+	for(i=1;i<=Object.keys(shortcutList["item"]).length;i++){
+		ScreenContext.fillStyle = "white";
+		ScreenContext.fillText(shortcutList["item"][i], ((i-1)*92)+182, 711);
+		ScreenContext.strokeText(shortcutList["item"][i], ((i-1)*92)+182, 711);
+	}
+	
+	for(i=1;i<=Object.keys(shortcutList["delete"]).length;i++){
+		ScreenContext.fillStyle = "white";
+		ScreenContext.fillText(shortcutList["delete"][i], 1428, ((i-1)*58)+698);
+		ScreenContext.strokeText(shortcutList["delete"][i], 1428, ((i-1)*58)+698);
+	}
+	1425, 680
 	ScreenContext.fillStyle = "white";
-	ScreenContext.fillText("Gold: " + gameStats["gold"], 10, 28);
-	ScreenContext.fillText("Spawn Time Left: " + gameStats["timeleft"], 130, 28);
-	ScreenContext.fillText("<3: " + Math.floor(gameStats["life"]), 1340, 28);
+	ScreenContext.fillText(gameStats["gold"], 749, 24);
+	ScreenContext.strokeText(gameStats["gold"], 749, 24);
+	
+	if(selectedUnit != null){
+		ScreenContext.drawImage(selectedUnit.screens[selectedUnit.getCurrentScreen()],166,0, 166,33);
+		if(selectedUnit.getCurrentScreen() == 0)
+			ScreenContext.fillStyle = "lightgreen";
+		else if(selectedUnit.getCurrentScreen() == 1)
+			ScreenContext.fillStyle = "yellow";
+		else
+			ScreenContext.fillStyle = "red";
+		ScreenContext.fillRect(364, 12, 297 * (selectedUnit.health/selectedUnit.origdata.health), 10);
+	}
+	
+	if(gameStats["timeleft"] > 0){
+		ScreenContext.fillStyle = "red";
+		ScreenContext.fillRect(76, 34, 1427 * (gameStats["timeleft"]/timetotal), 6);
+	}
+	
+	if(gameStats["life"] > 0){
+		ScreenContext.fillStyle = "lightgreen";
+		ScreenContext.fillRect(875, 4, 628 * (gameStats["life"]/lifetotal), 12);
+	}
 }
 
 function drawMenu(){
@@ -679,26 +842,32 @@ function drawMenu(){
 function drawGameOver(){
 	ScreenContext.globalAlpha = 0.6;
 	ScreenContext.drawImage(document.getElementById("grayoverlay"), 0, 0, 1560, 790);
-	ScreenContext.font = "200px Stencil";
+	ScreenContext.font = "190px Ravie";
 	ScreenContext.globalAlpha = 1;
-	ScreenContext.fillText("THANKS OBAMA", 20, 400);
+	ScreenContext.drawImage(document.getElementById("armon_angry"), 680, 40, 180, 180);
 	ScreenContext.fillStyle = "black";
-	ScreenContext.strokeText("THANKS OBAMA", 20, 400);
+	ScreenContext.fillText("GAME OVER", 20, 400);
+	ScreenContext.strokeStyle = "white";
+	ScreenContext.strokeText("GAME OVER", 20, 400);
+	ScreenContext.strokeStyle = "black";
+	ScreenContext.font = "10px Jokerman"
+	ScreenContext.fillText("Thanks, Obama!", 1420, 420);
 }
 
 function draw(){
-	ScreenContext.font = "20px Stencil";
+	//ScreenContext.font = "20px AR DESTINE";
+	ScreenContext.font = "20px Poplar Std";
 	/*(i=0;i<7;i++){
 		ScreenContext.drawImage(listImgLane[i], 0, i*90+45, 1440, 90);
 	}*/
-	ScreenContext.drawImage(floor, 0, 45, 1440, 630);
-	
-	
+	ScreenContext.drawImage(background, 0, 45, 1440, 630);
 	drawSprites();	
 	drawUI();
-	
 	if(isGameOver){
 		drawGameOver();
+	}
+	if(gameStats["menu"] == 0){
+		drawMenu();
 	}
 	
 }

@@ -1,5 +1,6 @@
 function Enemy(data, lane, effect){
 
+	this.origdata = data;
 	this.name = data.name;
 	this.x = -90;
 	this.y = (lane-1)*90;

@@ -1,5 +1,6 @@
 Factory = function(data, x, y){
 	
+	this.origdata = data;
 	this.name = data.name;
 	this.x = x;
 	this.y = y;
@@ -18,6 +19,23 @@ Factory = function(data, x, y){
 	this.current = 0;
 	this.cooldown = data.cooldown;
 	this.cooldownTimer = 0;
+	this.screens = new Array();
+	
+	for(z=0;z<3;z++){
+		this.screens.push(new Image());
+		this.screens[z].src = data.targetScreens[z];
+	}
+	
+	this.getCurrentScreen = function(){
+		if(this.health/this.origdata.health > 0.50){
+			return 0;
+		}else if(this.health/this.origdata.health > 0.20){
+			return 1;
+		}else{
+			return 2;
+		}
+	}
+	
 	
 	this.switchAction = function(action){
 		this.current = action;
