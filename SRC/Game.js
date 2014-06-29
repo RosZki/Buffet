@@ -16,6 +16,7 @@
 	var listImgBuild = new Array();
 	var listImgBuildIcons = new Array();
 	var listFields = new Array();
+	var listEffects = new Array();
 	
 	var indicator;
 	var selectedDelete;
@@ -265,6 +266,14 @@ function remove(){
 						gameStats["gold"] += tempGold;
 					listStuff.push(new Stuff(stuffList["coin"], listFactories[i].x, listFactories[i].y));
 				}
+				for(j=1;j<=Object.keys(allyList).length;j++){
+					for(k=0;k<allyList[j].requires.length;k++){
+						if(allyList[j].requires[k] == listFactories[i].name){
+							itemStats[allyList[j].name].total-=buildStats[listFactories[i].name].storage/Object.keys(allyList[j].requires).length;
+						}
+					}
+				}
+				buildStats[listFactories[i].name].cost = Math.floor(buildStats[listFactories[i].name].cost/=1.75)
 				listFactories.splice(i,1);
 				selectedUnit = null;
 			}
@@ -361,9 +370,21 @@ function update(){
 			}
 			else{
 				listFields[i].duration--;
-				for(j=0;j<listEnemies.length;j++){
-					listFields[i].activateEffect(listEnemies[j]);
+			}
+		}
+		for(i=0; i<listEffects.length;i++){
+			if((!isCollide(listEffects[i][0].x+listEffects[i][0].getCurrentX(),listEffects[i][0].y+listEffects[i][0].getCurrentY(),
+			listEffects[i][0].getCurrentX(),listEffects[i][0].getCurrentY(),
+			listEffects[i][1].x+listEffects[i][1].xDiff,listEffects[i][1].y+listEffects[i][1].yDiff,
+			listEffects[i][1].sizeX+10,listEffects[i][1].sizeY+10)) ||
+			listEffects[i][2].health <= 0|| listEffects[i][1].duration <= 0){
+				listEffects.splice(i,1);
+			}
+			else{
+				if(listEffects[i][2].current == 0){
+					listEffects[i][0].x += listEffects[i][2].speed;
 				}
+				listEffects[i][0].sprite.next();
 			}
 		}
 		for(i=0; i<listStuff.length;i++){
@@ -473,6 +494,23 @@ function update(){
 					listEnemies[i].switchAction(0);
 					listEnemies[i].move();
 				}
+				var hasField = false;
+				for(j=0;j<listFields.length;j++){
+					if(listFields[j].effect == "slow"){
+						if(listFields[j].inRange(listEnemies[i])){
+							if(!listFields[j].isAffected(listEnemies[i])){
+								console.log("oi!");
+								listEffects.push([new Stuff(stuffList["slow"],listEnemies[i].x,listEnemies[i].y),listFields[j], listEnemies[i]]);
+								console.log("oi!");
+								listFields[j].affected.push(listEnemies[i]);
+							}
+							listEnemies[i].speed = listEnemies[i].origdata.speed * 0.5;
+						}
+						else{
+							listEnemies[i].speed = listEnemies[i].origdata.speed;
+						}
+					}
+				}
 			}
 			if(!hasEnemyDeath)
 				listEnemies[i].listSprites[listEnemies[i].current].next();
@@ -485,7 +523,8 @@ function update(){
 				}
 				else{
 					if(listAllies[i].type == 3 && listAllies[i].field != null){
-						if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-2)
+						if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-2 &&
+						listAllies[i].listSprites[listAllies[i].current].counter == 0)
 							listFields.push(new Field(fieldList[listAllies[i].field],listAllies[i].x, listAllies[i].y));
 					}
 					if(listAllies[i].listSprites[listAllies[i].current].current == listAllies[i].listSprites[listAllies[i].current].listImage.length-1){
@@ -644,6 +683,14 @@ function drawSprites(){
 		listEnemies[i].getCurrentY());
 	}
 	
+	for(i=0;i<listEffects.length;i++){
+		ScreenContext.drawImage(listEffects[i][0].getCurrentFrame(),
+		listEffects[i][0].x + listEffects[i][0].getCurrentXDiff(), 
+		listEffects[i][0].y + listEffects[i][0].getCurrentYDiff()+45, 
+		listEffects[i][0].getCurrentX(), 
+		listEffects[i][0].getCurrentY());
+	}
+	
 	for(i=0; i<listStuff.length; i++){
 		ScreenContext.drawImage(listStuff[i].getCurrentFrame(),
 		listStuff[i].x + listStuff[i].getCurrentXDiff(), 
@@ -651,7 +698,7 @@ function drawSprites(){
 		listStuff[i].getCurrentX(), 
 		listStuff[i].getCurrentY());
 	}
-	
+
 	for(i=0;i<listAllies.length;i++){
 		if(listAllies[i].current == 1 && listAllies[i].type == 1){
 			for(k=0;k<listAllies[i].frameHit.length;k++){
@@ -729,13 +776,6 @@ function drawSprites(){
 	}
 	else if(selectedDelete == 2 && currentX != -1 && currentY != -1){
 		ScreenContext.drawImage(document.getElementById("fork"), currentX+15, currentY+70, 101, 82);
-	}
-	
-	if(selectedUnit != null){
-		ScreenContext.drawImage(indicator.getCurrentFrame(), 
-		indicator.x + indicator.getCurrentXDiff(), 
-		indicator.y + indicator.getCurrentYDiff()+45, 
-		indicator.getCurrentX(), indicator.getCurrentY());
 	}
 	
 }
@@ -834,6 +874,14 @@ function drawUI(){
 		ScreenContext.fillStyle = "lightgreen";
 		ScreenContext.fillRect(875, 4, 628 * (gameStats["life"]/lifetotal), 12);
 	}
+	
+	if(selectedUnit != null){
+		ScreenContext.drawImage(indicator.getCurrentFrame(), 
+		indicator.x + indicator.getCurrentXDiff(), 
+		indicator.y + indicator.getCurrentYDiff()+45, 
+		indicator.getCurrentX(), indicator.getCurrentY());
+	}
+	
 }
 
 function drawMenu(){

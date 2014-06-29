@@ -12,7 +12,7 @@ var projectileList = {
 
 var enemyList = {
 
-	1: { name:"Chumpy", health: 125, gold: 20, range: 1, attack: 2, speed: 3, 
+	1: { name:"Chumpy", health: 125, gold: 20, range: 1, attack: 5, speed: 3, 
 	listMove:["IMG/ENEMIES/chumpy_move_1.png","IMG/ENEMIES/chumpy_move_2.png","IMG/ENEMIES/chumpy_move_3.png","IMG/ENEMIES/chumpy_move_4.png","IMG/ENEMIES/chumpy_move_5.png","IMG/ENEMIES/chumpy_move_6.png"], 
 	listMoveX:[80,80,80,80,80,80], 
 	listMoveY:[80,80,80,80,80,80], 
@@ -138,7 +138,7 @@ var allyList = {
 	requires:["Fridge"]
 	},
 	
-	3: {name:"Eggy", health: 350, type: 3,
+	3: {name:"Eggy", health: 250, type: 3,
 	icon: "IMG/ALLIES/eggy_stand_1.png",
 	listStand:["IMG/ALLIES/eggy_stand_1.png","IMG/ALLIES/eggy_stand_2.png","IMG/ALLIES/eggy_stand_3.png","IMG/ALLIES/eggy_stand_4.png","IMG/ALLIES/eggy_stand_5.png","IMG/ALLIES/eggy_stand_6.png"], 
 	listStandX:[80,80,80,80,80,80,80],
@@ -218,6 +218,12 @@ var stuffList = {
 	listY:[24,24,24],
 	listXDiff:[35,35,35],
 	listYDiff:[-19,-19,-19]
+	},
+	"slow":{listImage:["IMG/STUFF/slow_1.png","IMG/STUFF/slow_2.png","IMG/STUFF/slow_3.png","IMG/STUFF/slow_4.png","IMG/STUFF/slow_5.png","IMG/STUFF/slow_6.png"],
+	listX:[80,80,80,80,80,80,80,80,80,80,80],
+	listY:[80,80,80,80,80,80,80,80,80,80,80],
+	listXDiff:[5,5,5,5,5,5,5,5,5,5,5],
+	listYDiff:[5,5,5,5,5,5,5,5,5,5,5]
 	}
 }
 
@@ -232,7 +238,7 @@ var buildStats = {
 }
 
 var gameStats = {
-	"spawntime": 100,
+	"spawntime": 70,
 	"spawncounter": 0,
 	"gold": 300,
 	"life": 2000,
