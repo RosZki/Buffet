@@ -1,274 +1,324 @@
-var projectileList = {
-	
-	"icytreat": { name:"icytreat", attack: 4, speed: 15,
-		listImage:["IMG/EFFECTS/icytreat_shot_1.png","IMG/EFFECTS/icytreat_shot_2.png","IMG/EFFECTS/icytreat_shot_3.png"],
-		listX:[20,20,20],
-		listY:[20,20,20],
-		listXDiff:[30,30,30],
-		listYDiff:[30,30,30],
-		hitEffect:"icytreat"
+var ui_elements = {
+
+	screen:{ main: "IMG/UI/SCREEN/game_main.png",
+	main_grid:"IMG/UI/SCREEN/game_main_grid.png",
+	frame:["IMG/UI/SCREEN/frame_healthy.png", "IMG/UI/SCREEN/frame_halved.png", "IMG/UI/SCREEN/frame_critical.png"],
+	background: "IMG/UI/SCREEN/stage_table.png",
+	unit_selected: "IMG/UI/SCREEN/unit_selected.png"
 	}
 }
 
-var enemyList = {
-
-	1: { name:"Chumpy", health: 125, gold: 20, range: 1, attack: 5, speed: 3, 
-	listMove:["IMG/ENEMIES/chumpy_move_1.png","IMG/ENEMIES/chumpy_move_2.png","IMG/ENEMIES/chumpy_move_3.png","IMG/ENEMIES/chumpy_move_4.png","IMG/ENEMIES/chumpy_move_5.png","IMG/ENEMIES/chumpy_move_6.png"], 
-	listMoveX:[80,80,80,80,80,80], 
-	listMoveY:[80,80,80,80,80,80], 
-	listMoveXDiff:[5,5,5,5,5,5], 
-	listMoveYDiff:[5,5,5,5,5,5], 
-	listAttack:["IMG/ENEMIES/chumpy_attack_1.png","IMG/ENEMIES/chumpy_attack_2.png","IMG/ENEMIES/chumpy_attack_3.png","IMG/ENEMIES/chumpy_attack_4.png","IMG/ENEMIES/chumpy_attack_5.png","IMG/ENEMIES/chumpy_attack_6.png","IMG/ENEMIES/chumpy_attack_7.png","IMG/ENEMIES/chumpy_attack_8.png","IMG/ENEMIES/chumpy_attack_9.png"], 
-	listAttackX:[160,160,160,160,160,160,160,160,160,160],
-	listAttackY:[80,80,80,80,80,80,80,80,80,80], 
-	listAttackXDiff:[5,5,5,5,5,5,5,5,5,5],
-	listAttackYDiff:[5,5,5,5,5,5,5,5,5,5], 
-	listDefeat:["IMG/ENEMIES/chumpy_defeat_1.png","IMG/ENEMIES/chumpy_defeat_2.png","IMG/ENEMIES/chumpy_defeat_3.png","IMG/ENEMIES/chumpy_defeat_4.png","IMG/ENEMIES/chumpy_defeat_5.png","IMG/ENEMIES/chumpy_defeat_6.png","IMG/ENEMIES/chumpy_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5],	
-	frameHit:[6,7],
-	hitEffect: "chumpy"},
-	
-	4: { name:"Chumpro", health: 225, gold: 40, range: 1, attack: 8, speed: 7, 
-	listMove:["IMG/ENEMIES/chumpro_move_1.png","IMG/ENEMIES/chumpro_move_2.png","IMG/ENEMIES/chumpro_move_3.png","IMG/ENEMIES/chumpro_move_4.png"], 
-	listMoveX:[80,80,80,80], 
-	listMoveY:[80,80,80,80], 
-	listMoveXDiff:[5,5,5,5], 
-	listMoveYDiff:[5,5,5,5], 
-	listAttack:["IMG/ENEMIES/chumpro_attack_1.png","IMG/ENEMIES/chumpro_attack_2.png","IMG/ENEMIES/chumpro_attack_3.png","IMG/ENEMIES/chumpro_attack_4.png","IMG/ENEMIES/chumpro_attack_5.png","IMG/ENEMIES/chumpro_attack_6.png","IMG/ENEMIES/chumpro_attack_7.png","IMG/ENEMIES/chumpro_attack_8.png","IMG/ENEMIES/chumpro_attack_9.png"], 
-	listAttackX:[80,80,80,80,80,80,80,80,80],
-	listAttackY:[80,80,80,80,80,80,80,80,80],
-	listAttackXDiff:[5,5,5,5,5,5,5,5,5],
-	listAttackYDiff:[5,5,5,5,5,5,5,5,5],
-	listDefeat:["IMG/ENEMIES/chumpro_defeat_1.png","IMG/ENEMIES/chumpro_defeat_2.png","IMG/ENEMIES/chumpro_defeat_3.png","IMG/ENEMIES/chumpro_defeat_4.png","IMG/ENEMIES/chumpro_defeat_5.png","IMG/ENEMIES/chumpro_defeat_6.png","IMG/ENEMIES/chumpro_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],
-	frameHit:[6,7],
-	hitEffect: null},
-	
-	2: { name:"Armon", health: 500, gold: 100, range: 3, attack: 6, speed: 2, 
-	listMove:["IMG/ENEMIES/armon_move_1.png","IMG/ENEMIES/armon_move_2.png","IMG/ENEMIES/armon_move_3.png","IMG/ENEMIES/armon_move_4.png","IMG/ENEMIES/armon_move_5.png","IMG/ENEMIES/armon_move_6.png"], 
-	listMoveX:[80,80,80,80,80,80], 
-	listMoveY:[80,80,80,80,80,80],  
-	listMoveXDiff:[5,5,5,5,5,5], 
-	listMoveYDiff:[5,5,5,5,5,5], 
-	listAttack:["IMG/ENEMIES/armon_attack_1.png","IMG/ENEMIES/armon_attack_2.png","IMG/ENEMIES/armon_attack_3.png","IMG/ENEMIES/armon_attack_4.png","IMG/ENEMIES/armon_attack_5.png","IMG/ENEMIES/armon_attack_6.png","IMG/ENEMIES/armon_attack_7.png","IMG/ENEMIES/armon_attack_8.png","IMG/ENEMIES/armon_attack_9.png","IMG/ENEMIES/armon_attack_10.png"], 
-	listAttackX:[160,160,160,160,160,160,160,160,160,160],
-	listAttackY:[240,240,240,240,240,240,240,240,240,240],
-	listAttackXDiff:[5,5,5,5,5,5,5,5,5,5],
-	listAttackYDiff:[-75,-75,-75,-75,-75,-75,-75,-75,-75,-75],
-	listDefeat:["IMG/ENEMIES/armon_defeat_1.png","IMG/ENEMIES/armon_defeat_2.png","IMG/ENEMIES/armon_defeat_3.png","IMG/ENEMIES/armon_defeat_4.png","IMG/ENEMIES/armon_defeat_5.png","IMG/ENEMIES/armon_defeat_6.png","IMG/ENEMIES/armon_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5],
-	frameHit:[6,7,8],
-	hitEffect: "armon"},
-	
-	3: { name:"Quicky", health: 50, gold: 30, range: 1, attack: 4, speed: 8, 
-	listMove:["IMG/ENEMIES/quicky_move_1.png","IMG/ENEMIES/quicky_move_2.png","IMG/ENEMIES/quicky_move_3.png","IMG/ENEMIES/quicky_move_4.png","IMG/ENEMIES/quicky_move_5.png","IMG/ENEMIES/quicky_move_6.png"], 
-	listMoveX:[80,80,80,80,80,80], 
-	listMoveY:[80,80,80,80,80,80],  
-	listMoveXDiff:[5,5,5,5,5,5], 
-	listMoveYDiff:[5,5,5,5,5,5], 
-	listAttack:["IMG/ENEMIES/quicky_attack_1.png","IMG/ENEMIES/quicky_attack_2.png","IMG/ENEMIES/quicky_attack_3.png","IMG/ENEMIES/quicky_attack_4.png","IMG/ENEMIES/quicky_attack_5.png","IMG/ENEMIES/quicky_attack_6.png","IMG/ENEMIES/quicky_attack_7.png","IMG/ENEMIES/quicky_attack_8.png","IMG/ENEMIES/quicky_attack_9.png","IMG/ENEMIES/quicky_attack_10.png"], 
-	listAttackX:[160,160,160,160,160,160,160,160,160,160],
-	listAttackY:[80,80,80,80,80,80,80,80,80,80],  
-	listAttackXDiff:[5,5,5,5,5,5,5,5,5,5],
-	listAttackYDiff:[5,5,5,5,5,5,5,5,5,5],
-	listDefeat:["IMG/ENEMIES/quicky_defeat_1.png","IMG/ENEMIES/quicky_defeat_2.png","IMG/ENEMIES/quicky_defeat_3.png","IMG/ENEMIES/quicky_defeat_4.png","IMG/ENEMIES/quicky_defeat_5.png","IMG/ENEMIES/quicky_defeat_6.png","IMG/ENEMIES/quicky_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5],
-	frameHit:[3,4,5,6],
-	hitEffect: "quicky"},
-	
-}
-
-var allyList = {
-
-	1: {name:"Cubice", health: 200, range: 1, attack: 10, type: 1,
-	icon: "IMG/ALLIES/cubice_stand_1.png",
-	listStand:["IMG/ALLIES/cubice_stand_1.png","IMG/ALLIES/cubice_stand_2.png","IMG/ALLIES/cubice_stand_3.png","IMG/ALLIES/cubice_stand_4.png","IMG/ALLIES/cubice_stand_5.png","IMG/ALLIES/cubice_stand_6.png"], 
-	listStandX:[80,80,80,80,80,80,80], 
-	listStandY:[80,80,80,80,80,80,80],
-	listStandXDiff:[5,5,5,5,5,5],  
-	listStandYDiff:[5,5,5,5,5,5],  
-	listAttack:["IMG/ALLIES/cubice_attack_1.png","IMG/ALLIES/cubice_attack_2.png","IMG/ALLIES/cubice_attack_3.png","IMG/ALLIES/cubice_attack_4.png","IMG/ALLIES/cubice_attack_5.png","IMG/ALLIES/cubice_attack_6.png","IMG/ALLIES/cubice_attack_7.png","IMG/ALLIES/cubice_attack_8.png","IMG/ALLIES/cubice_attack_9.png","IMG/ALLIES/cubice_attack_10.png"], 
-	listAttackX:[160,160,160,160,160,160,160,160,160,160],
-	listAttackY:[80,80,80,80,80,80,80,80,80,80],
-	listAttackXDiff:[-85,-85,-85,-85,-85,-85,-85,-85,-85,-85],
-	listAttackYDiff:[5,5,5,5,5,5,5,5,5,5],
-	listDefeat:["IMG/ALLIES/cubice_defeat_1.png","IMG/ALLIES/cubice_defeat_2.png","IMG/ALLIES/cubice_defeat_3.png","IMG/ALLIES/cubice_defeat_4.png","IMG/ALLIES/cubice_defeat_5.png","IMG/ALLIES/cubice_defeat_6.png","IMG/ALLIES/cubice_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5,5,5],
-	frameHit:[7,8],
-	requires:["Fridge"],
-	targetScreens:["IMG/ALLIES/cubice_healthy.png","IMG/ALLIES/cubice_halved.png","IMG/ALLIES/cubice_critical.png"],
-	hitEffect:"cubice"
+var sprites = {
+	"armon":{ "move":["IMG/ENEMIES/ARMON/MOVE/01.png","IMG/ENEMIES/ARMON/MOVE/02.png","IMG/ENEMIES/ARMON/MOVE/03.png","IMG/ENEMIES/ARMON/MOVE/04.png","IMG/ENEMIES/ARMON/MOVE/05.png","IMG/ENEMIES/ARMON/MOVE/06.png"],
+	"attack": ["IMG/ENEMIES/ARMON/ATTACK/01.png","IMG/ENEMIES/ARMON/ATTACK/02.png","IMG/ENEMIES/ARMON/ATTACK/03.png","IMG/ENEMIES/ARMON/ATTACK/04.png","IMG/ENEMIES/ARMON/ATTACK/05.png","IMG/ENEMIES/ARMON/ATTACK/06.png","IMG/ENEMIES/ARMON/ATTACK/07.png","IMG/ENEMIES/ARMON/ATTACK/08.png","IMG/ENEMIES/ARMON/ATTACK/09.png","IMG/ENEMIES/ARMON/ATTACK/10.png"],
+	"defeat": ["IMG/ENEMIES/ARMON/DEFEAT/01.png","IMG/ENEMIES/ARMON/DEFEAT/02.png","IMG/ENEMIES/ARMON/DEFEAT/03.png","IMG/ENEMIES/ARMON/DEFEAT/04.png","IMG/ENEMIES/ARMON/DEFEAT/05.png","IMG/ENEMIES/ARMON/DEFEAT/06.png","IMG/ENEMIES/ARMON/DEFEAT/07.png"],
+	"hiteffect":["IMG/ENEMIES/ARMON/HITEFFECT/01.png","IMG/ENEMIES/ARMON/HITEFFECT/02.png","IMG/ENEMIES/ARMON/HITEFFECT/03.png"]
+	},
+	"armpro":{ "move":["IMG/ENEMIES/ARMPRO/MOVE/01.png","IMG/ENEMIES/ARMPRO/MOVE/02.png","IMG/ENEMIES/ARMPRO/MOVE/03.png","IMG/ENEMIES/ARMPRO/MOVE/04.png","IMG/ENEMIES/ARMPRO/MOVE/05.png","IMG/ENEMIES/ARMPRO/MOVE/06.png"],
+	"attack": ["IMG/ENEMIES/ARMPRO/ATTACK/01.png","IMG/ENEMIES/ARMPRO/ATTACK/02.png","IMG/ENEMIES/ARMPRO/ATTACK/03.png","IMG/ENEMIES/ARMPRO/ATTACK/04.png","IMG/ENEMIES/ARMPRO/ATTACK/05.png","IMG/ENEMIES/ARMPRO/ATTACK/06.png","IMG/ENEMIES/ARMPRO/ATTACK/07.png","IMG/ENEMIES/ARMPRO/ATTACK/08.png","IMG/ENEMIES/ARMPRO/ATTACK/09.png","IMG/ENEMIES/ARMPRO/ATTACK/10.png","IMG/ENEMIES/ARMPRO/ATTACK/11.png","IMG/ENEMIES/ARMPRO/ATTACK/12.png", "IMG/ENEMIES/ARMPRO/ATTACK/13.png","IMG/ENEMIES/ARMPRO/ATTACK/14.png","IMG/ENEMIES/ARMPRO/ATTACK/15.png","IMG/ENEMIES/ARMPRO/ATTACK/16.png","IMG/ENEMIES/ARMPRO/ATTACK/17.png","IMG/ENEMIES/ARMPRO/ATTACK/18.png","IMG/ENEMIES/ARMPRO/ATTACK/19.png","IMG/ENEMIES/ARMPRO/ATTACK/20.png","IMG/ENEMIES/ARMPRO/ATTACK/21.png","IMG/ENEMIES/ARMPRO/ATTACK/22.png","IMG/ENEMIES/ARMPRO/ATTACK/23.png","IMG/ENEMIES/ARMPRO/ATTACK/24.png"],
+	"defeat": ["IMG/ENEMIES/ARMPRO/DEFEAT/01.png","IMG/ENEMIES/ARMPRO/DEFEAT/02.png","IMG/ENEMIES/ARMPRO/DEFEAT/03.png","IMG/ENEMIES/ARMPRO/DEFEAT/04.png","IMG/ENEMIES/ARMPRO/DEFEAT/05.png","IMG/ENEMIES/ARMPRO/DEFEAT/06.png","IMG/ENEMIES/ARMPRO/DEFEAT/07.png"],
+	"hiteffect":[]
+	},
+	"chumpy":{ "move":["IMG/ENEMIES/CHUMPY/MOVE/01.png","IMG/ENEMIES/CHUMPY/MOVE/02.png","IMG/ENEMIES/CHUMPY/MOVE/03.png","IMG/ENEMIES/CHUMPY/MOVE/04.png","IMG/ENEMIES/CHUMPY/MOVE/05.png","IMG/ENEMIES/CHUMPY/MOVE/06.png"],
+	"attack": ["IMG/ENEMIES/CHUMPY/ATTACK/01.png","IMG/ENEMIES/CHUMPY/ATTACK/02.png","IMG/ENEMIES/CHUMPY/ATTACK/03.png","IMG/ENEMIES/CHUMPY/ATTACK/04.png","IMG/ENEMIES/CHUMPY/ATTACK/05.png","IMG/ENEMIES/CHUMPY/ATTACK/06.png","IMG/ENEMIES/CHUMPY/ATTACK/07.png","IMG/ENEMIES/CHUMPY/ATTACK/08.png","IMG/ENEMIES/CHUMPY/ATTACK/09.png","IMG/ENEMIES/CHUMPY/ATTACK/10.png"],
+	"defeat": ["IMG/ENEMIES/CHUMPY/DEFEAT/01.png","IMG/ENEMIES/CHUMPY/DEFEAT/02.png","IMG/ENEMIES/CHUMPY/DEFEAT/03.png","IMG/ENEMIES/CHUMPY/DEFEAT/04.png","IMG/ENEMIES/CHUMPY/DEFEAT/05.png","IMG/ENEMIES/CHUMPY/DEFEAT/06.png","IMG/ENEMIES/CHUMPY/DEFEAT/07.png"],
+	"hiteffect":["IMG/ENEMIES/CHUMPY/HITEFFECT/01.png","IMG/ENEMIES/CHUMPY/HITEFFECT/02.png"]
+	},
+	"q":{  "move":["IMG/ENEMIES/Q/MOVE/01.png","IMG/ENEMIES/Q/MOVE/02.png","IMG/ENEMIES/Q/MOVE/03.png","IMG/ENEMIES/Q/MOVE/04.png","IMG/ENEMIES/Q/MOVE/05.png","IMG/ENEMIES/Q/MOVE/06.png"],
+	"attack": ["IMG/ENEMIES/Q/ATTACK/01.png","IMG/ENEMIES/Q/ATTACK/02.png","IMG/ENEMIES/Q/ATTACK/03.png","IMG/ENEMIES/Q/ATTACK/04.png","IMG/ENEMIES/Q/ATTACK/05.png","IMG/ENEMIES/Q/ATTACK/06.png","IMG/ENEMIES/Q/ATTACK/07.png","IMG/ENEMIES/Q/ATTACK/08.png","IMG/ENEMIES/Q/ATTACK/09.png","IMG/ENEMIES/Q/ATTACK/10.png"],
+	"defeat": ["IMG/ENEMIES/Q/DEFEAT/01.png","IMG/ENEMIES/Q/DEFEAT/02.png","IMG/ENEMIES/Q/DEFEAT/03.png","IMG/ENEMIES/Q/DEFEAT/04.png","IMG/ENEMIES/Q/DEFEAT/05.png","IMG/ENEMIES/Q/DEFEAT/06.png","IMG/ENEMIES/Q/DEFEAT/07.png"],
+	"hiteffect":["IMG/ENEMIES/Q/HITEFFECT/01.png","IMG/ENEMIES/Q/HITEFFECT/02.png"]
 	},
 	
-	2: {name:"IcyTreat", health: 150, type: 2,
-	icon: "IMG/ALLIES/icytreat_stand_1.png",
-	listStand:["IMG/ALLIES/icytreat_stand_1.png","IMG/ALLIES/icytreat_stand_2.png","IMG/ALLIES/icytreat_stand_3.png","IMG/ALLIES/icytreat_stand_4.png","IMG/ALLIES/icytreat_stand_5.png","IMG/ALLIES/icytreat_stand_6.png"], 
-	listStandX:[80,80,80,80,80,80,80],
-	listStandY:[80,80,80,80,80,80,80], 
-	listStandXDiff:[5,5,5,5,5,5], 
-	listStandYDiff:[5,5,5,5,5,5],
-	listAttack:["IMG/ALLIES/icytreat_attack_1.png","IMG/ALLIES/icytreat_attack_2.png","IMG/ALLIES/icytreat_attack_3.png","IMG/ALLIES/icytreat_attack_4.png","IMG/ALLIES/icytreat_attack_5.png","IMG/ALLIES/icytreat_attack_6.png","IMG/ALLIES/icytreat_attack_7.png","IMG/ALLIES/icytreat_attack_8.png","IMG/ALLIES/icytreat_attack_9.png","IMG/ALLIES/icytreat_attack_10.png"],
-	listAttackX:[80,80,80,80,80,80,80,80,80,80],
-	listAttackY:[80,80,80,80,80,80,80,80,80,80],
-	listAttackXDiff:[5,5,5,5,5,5,5,5,5,5], 
-	listAttackYDiff:[5,5,5,5,5,5,5,5,5,5],
-	listDefeat:["IMG/ALLIES/icytreat_defeat_1.png","IMG/ALLIES/icytreat_defeat_2.png","IMG/ALLIES/icytreat_defeat_3.png","IMG/ALLIES/icytreat_defeat_4.png","IMG/ALLIES/icytreat_defeat_5.png","IMG/ALLIES/icytreat_defeat_6.png","IMG/ALLIES/icytreat_defeat_7.png"],
-	listDefeatX:[80,80,80,80,80,80,80],
-	listDefeatY:[80,80,80,80,80,80,80],
-	listDefeatXDiff:[5,5,5,5,5,5,5],
-	listDefeatYDiff:[5,5,5,5,5,5,5],
-	projectile: "icytreat",
-	release:[7,8,9],
-	targetScreens:["IMG/ALLIES/icytreat_healthy.png","IMG/ALLIES/icytreat_halved.png","IMG/ALLIES/icytreat_critical.png"],
-	requires:["Fridge"]
+	"fridge":{ "stand":["IMG/ALLIES/FRIDGE/STAND/01.png","IMG/ALLIES/FRIDGE/STAND/02.png","IMG/ALLIES/FRIDGE/STAND/03.png","IMG/ALLIES/FRIDGE/STAND/04.png","IMG/ALLIES/FRIDGE/STAND/05.png","IMG/ALLIES/FRIDGE/STAND/06.png", "IMG/ALLIES/FRIDGE/STAND/07.png", "IMG/ALLIES/FRIDGE/STAND/08.png"],
+	"defeat": ["IMG/ALLIES/FRIDGE/DEFEAT/01.png","IMG/ALLIES/FRIDGE/DEFEAT/02.png","IMG/ALLIES/FRIDGE/DEFEAT/03.png","IMG/ALLIES/FRIDGE/DEFEAT/04.png","IMG/ALLIES/FRIDGE/DEFEAT/05.png","IMG/ALLIES/FRIDGE/DEFEAT/06.png","IMG/ALLIES/FRIDGE/DEFEAT/07.png", "IMG/ALLIES/FRIDGE/DEFEAT/08.png"]
+	},
+	"cubice":{ "stand":["IMG/ALLIES/CUBICE/STAND/01.png","IMG/ALLIES/CUBICE/STAND/02.png","IMG/ALLIES/CUBICE/STAND/03.png","IMG/ALLIES/CUBICE/STAND/04.png","IMG/ALLIES/CUBICE/STAND/05.png","IMG/ALLIES/CUBICE/STAND/06.png"],
+	"attack": ["IMG/ALLIES/CUBICE/ATTACK/01.png","IMG/ALLIES/CUBICE/ATTACK/02.png","IMG/ALLIES/CUBICE/ATTACK/03.png","IMG/ALLIES/CUBICE/ATTACK/04.png","IMG/ALLIES/CUBICE/ATTACK/05.png","IMG/ALLIES/CUBICE/ATTACK/06.png","IMG/ALLIES/CUBICE/ATTACK/07.png","IMG/ALLIES/CUBICE/ATTACK/08.png","IMG/ALLIES/CUBICE/ATTACK/09.png","IMG/ALLIES/CUBICE/ATTACK/10.png"],
+	"defeat": ["IMG/ALLIES/CUBICE/DEFEAT/01.png","IMG/ALLIES/CUBICE/DEFEAT/02.png","IMG/ALLIES/CUBICE/DEFEAT/03.png","IMG/ALLIES/CUBICE/DEFEAT/04.png","IMG/ALLIES/CUBICE/DEFEAT/05.png","IMG/ALLIES/CUBICE/DEFEAT/06.png","IMG/ALLIES/CUBICE/DEFEAT/07.png"],
+	"hiteffect":["IMG/ALLIES/CUBICE/HITEFFECT/01.png","IMG/ALLIES/CUBICE/HITEFFECT/02.png"]
+	},
+	"icytreat":{ "stand":["IMG/ALLIES/ICYTREAT/STAND/01.png","IMG/ALLIES/ICYTREAT/STAND/02.png","IMG/ALLIES/ICYTREAT/STAND/03.png","IMG/ALLIES/ICYTREAT/STAND/04.png","IMG/ALLIES/ICYTREAT/STAND/05.png","IMG/ALLIES/ICYTREAT/STAND/06.png"],
+	"attack": ["IMG/ALLIES/ICYTREAT/ATTACK/01.png","IMG/ALLIES/ICYTREAT/ATTACK/02.png","IMG/ALLIES/ICYTREAT/ATTACK/03.png","IMG/ALLIES/ICYTREAT/ATTACK/04.png","IMG/ALLIES/ICYTREAT/ATTACK/05.png","IMG/ALLIES/ICYTREAT/ATTACK/06.png","IMG/ALLIES/ICYTREAT/ATTACK/07.png","IMG/ALLIES/ICYTREAT/ATTACK/08.png","IMG/ALLIES/ICYTREAT/ATTACK/09.png","IMG/ALLIES/ICYTREAT/ATTACK/10.png"],
+	"defeat": ["IMG/ALLIES/ICYTREAT/DEFEAT/01.png","IMG/ALLIES/ICYTREAT/DEFEAT/02.png","IMG/ALLIES/ICYTREAT/DEFEAT/03.png","IMG/ALLIES/ICYTREAT/DEFEAT/04.png","IMG/ALLIES/ICYTREAT/DEFEAT/05.png","IMG/ALLIES/ICYTREAT/DEFEAT/06.png","IMG/ALLIES/ICYTREAT/DEFEAT/07.png"],
+	"hiteffect":["IMG/ALLIES/ICYTREAT/HITEFFECT/01.png","IMG/ALLIES/ICYTREAT/HITEFFECT/02.png"],
+	"projectile":["IMG/ALLIES/ICYTREAT/PROJECTILE/01.png","IMG/ALLIES/ICYTREAT/PROJECTILE/02.png", "IMG/ALLIES/ICYTREAT/PROJECTILE/03.png"]
+	},
+	"eggy":{ "stand":["IMG/ALLIES/EGGY/STAND/01.png","IMG/ALLIES/EGGY/STAND/02.png","IMG/ALLIES/EGGY/STAND/03.png","IMG/ALLIES/EGGY/STAND/04.png","IMG/ALLIES/EGGY/STAND/05.png","IMG/ALLIES/EGGY/STAND/06.png"],
+	"defeat": ["IMG/ALLIES/EGGY/DEFEAT/01.png","IMG/ALLIES/EGGY/DEFEAT/02.png","IMG/ALLIES/EGGY/DEFEAT/03.png","IMG/ALLIES/EGGY/DEFEAT/04.png","IMG/ALLIES/EGGY/DEFEAT/05.png","IMG/ALLIES/EGGY/DEFEAT/06.png","IMG/ALLIES/EGGY/DEFEAT/07.png", "IMG/ALLIES/EGGY/DEFEAT/08.png"]
 	},
 	
-	3: {name:"Eggy", health: 250, type: 3,
-	icon: "IMG/ALLIES/eggy_stand_1.png",
-	listStand:["IMG/ALLIES/eggy_stand_1.png","IMG/ALLIES/eggy_stand_2.png","IMG/ALLIES/eggy_stand_3.png","IMG/ALLIES/eggy_stand_4.png","IMG/ALLIES/eggy_stand_5.png","IMG/ALLIES/eggy_stand_6.png"], 
-	listStandX:[80,80,80,80,80,80,80],
-	listStandY:[80,80,80,80,80,80,80], 
-	listStandXDiff:[5,5,5,5,5,5], 
-	listStandYDiff:[5,5,5,5,5,5],
-	listDefeat:["IMG/ALLIES/eggy_defeat_1.png","IMG/ALLIES/eggy_defeat_2.png","IMG/ALLIES/eggy_defeat_3.png","IMG/ALLIES/eggy_defeat_4.png","IMG/ALLIES/eggy_defeat_5.png","IMG/ALLIES/eggy_defeat_6.png","IMG/ALLIES/eggy_defeat_7.png","IMG/ALLIES/eggy_defeat_8.png"],
-	listDefeatX:[240,240,240,240,240,240,240],
-	listDefeatY:[240,240,240,240,240,240,240],
-	listDefeatXDiff:[-75,-75,-75,-75,-75,-75,-75],
-	listDefeatYDiff:[-75,-75,-75,-75,-75,-75,-75],
-	field: "eggy",
-	targetScreens:["IMG/ALLIES/eggy_healthy.png","IMG/ALLIES/eggy_halved.png","IMG/ALLIES/eggy_critical.png"],
-	requires:["Fridge"]
-	}
+	"oven":{ "stand":["IMG/ALLIES/OVEN/STAND/01.png","IMG/ALLIES/OVEN/STAND/02.png","IMG/ALLIES/OVEN/STAND/03.png","IMG/ALLIES/OVEN/STAND/04.png","IMG/ALLIES/OVEN/STAND/05.png"],
+	"defeat": ["IMG/ALLIES/OVEN/DEFEAT/01.png","IMG/ALLIES/OVEN/DEFEAT/02.png","IMG/ALLIES/OVEN/DEFEAT/03.png","IMG/ALLIES/OVEN/DEFEAT/04.png","IMG/ALLIES/OVEN/DEFEAT/05.png","IMG/ALLIES/OVEN/DEFEAT/06.png","IMG/ALLIES/OVEN/DEFEAT/07.png", "IMG/ALLIES/OVEN/DEFEAT/08.png"]
+	},
 	
+	"candystand":{ "stand":["IMG/ALLIES/CANDYSTAND/STAND/01.png","IMG/ALLIES/CANDYSTAND/STAND/02.png","IMG/ALLIES/CANDYSTAND/STAND/03.png","IMG/ALLIES/CANDYSTAND/STAND/04.png","IMG/ALLIES/CANDYSTAND/STAND/05.png"],
+	"defeat": ["IMG/ALLIES/CANDYSTAND/DEFEAT/01.png","IMG/ALLIES/CANDYSTAND/DEFEAT/02.png","IMG/ALLIES/CANDYSTAND/DEFEAT/03.png","IMG/ALLIES/CANDYSTAND/DEFEAT/04.png","IMG/ALLIES/CANDYSTAND/DEFEAT/05.png","IMG/ALLIES/CANDYSTAND/DEFEAT/06.png","IMG/ALLIES/CANDYSTAND/DEFEAT/07.png", "IMG/ALLIES/CANDYSTAND/DEFEAT/08.png"]
+	},
+	"lolipop":{ "stand":["IMG/ALLIES/LOLIPOP/STAND/01.png","IMG/ALLIES/LOLIPOP/STAND/02.png","IMG/ALLIES/LOLIPOP/STAND/03.png","IMG/ALLIES/LOLIPOP/STAND/04.png","IMG/ALLIES/LOLIPOP/STAND/05.png","IMG/ALLIES/LOLIPOP/STAND/06.png"],
+	"attack": ["IMG/ALLIES/LOLIPOP/ATTACK/01.png","IMG/ALLIES/LOLIPOP/ATTACK/02.png","IMG/ALLIES/LOLIPOP/ATTACK/03.png","IMG/ALLIES/LOLIPOP/ATTACK/04.png","IMG/ALLIES/LOLIPOP/ATTACK/05.png","IMG/ALLIES/LOLIPOP/ATTACK/06.png","IMG/ALLIES/LOLIPOP/ATTACK/07.png","IMG/ALLIES/LOLIPOP/ATTACK/08.png","IMG/ALLIES/LOLIPOP/ATTACK/09.png","IMG/ALLIES/LOLIPOP/ATTACK/10.png","IMG/ALLIES/LOLIPOP/ATTACK/11.png"],
+	"defeat": ["IMG/ALLIES/LOLIPOP/DEFEAT/01.png","IMG/ALLIES/LOLIPOP/DEFEAT/02.png","IMG/ALLIES/LOLIPOP/DEFEAT/03.png","IMG/ALLIES/LOLIPOP/DEFEAT/04.png","IMG/ALLIES/LOLIPOP/DEFEAT/05.png","IMG/ALLIES/LOLIPOP/DEFEAT/06.png","IMG/ALLIES/LOLIPOP/DEFEAT/07.png"],
+	"hiteffect":["IMG/ALLIES/LOLIPOP/HITEFFECT/01.png","IMG/ALLIES/LOLIPOP/HITEFFECT/02.png"]
+	},
+	"chocobunny":{ "stand":["IMG/ALLIES/CHOCOBUNNY/STAND/01.png","IMG/ALLIES/CHOCOBUNNY/STAND/02.png","IMG/ALLIES/CHOCOBUNNY/STAND/03.png","IMG/ALLIES/CHOCOBUNNY/STAND/04.png"],
+	"defeat": ["IMG/ALLIES/CHOCOBUNNY/DEFEAT/01.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/02.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/03.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/04.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/05.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/06.png","IMG/ALLIES/CHOCOBUNNY/DEFEAT/07.png"]
+	},
 	
-}
-
-var fieldList = {
-	"eggy":{
-	image:["IMG/FIELDS/eggy_field.png"],
-	x:240,
-	y:240,
-	xDiff:-75,
-	yDiff:-75,
-	duration: 180,
-	effect:"slow"
+	"vendingmachine":{ "stand":["IMG/ALLIES/VENDINGMACHINE/STAND/01.png","IMG/ALLIES/VENDINGMACHINE/STAND/02.png","IMG/ALLIES/VENDINGMACHINE/STAND/03.png","IMG/ALLIES/VENDINGMACHINE/STAND/04.png","IMG/ALLIES/VENDINGMACHINE/STAND/05.png"],
+	"defeat": ["IMG/ALLIES/VENDINGMACHINE/DEFEAT/01.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/02.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/03.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/04.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/05.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/06.png","IMG/ALLIES/VENDINGMACHINE/DEFEAT/07.png", "IMG/ALLIES/VENDINGMACHINE/DEFEAT/08.png"]
+	},
+	
+	/*"fastfood":{
+	},*/
+	"pizzaslica":{ "stand":["IMG/ALLIES/PIZZASLICA/STAND/01.png","IMG/ALLIES/PIZZASLICA/STAND/02.png","IMG/ALLIES/PIZZASLICA/STAND/03.png","IMG/ALLIES/PIZZASLICA/STAND/04.png","IMG/ALLIES/PIZZASLICA/STAND/05.png","IMG/ALLIES/PIZZASLICA/STAND/06.png"],
+	"attack": ["IMG/ALLIES/PIZZASLICA/ATTACK/01.png","IMG/ALLIES/PIZZASLICA/ATTACK/02.png","IMG/ALLIES/PIZZASLICA/ATTACK/03.png","IMG/ALLIES/PIZZASLICA/ATTACK/04.png","IMG/ALLIES/PIZZASLICA/ATTACK/05.png","IMG/ALLIES/PIZZASLICA/ATTACK/06.png","IMG/ALLIES/PIZZASLICA/ATTACK/07.png","IMG/ALLIES/PIZZASLICA/ATTACK/08.png","IMG/ALLIES/PIZZASLICA/ATTACK/09.png","IMG/ALLIES/PIZZASLICA/ATTACK/10.png"],
+	"defeat": ["IMG/ALLIES/PIZZASLICA/DEFEAT/01.png","IMG/ALLIES/PIZZASLICA/DEFEAT/02.png","IMG/ALLIES/PIZZASLICA/DEFEAT/03.png","IMG/ALLIES/PIZZASLICA/DEFEAT/04.png","IMG/ALLIES/PIZZASLICA/DEFEAT/05.png","IMG/ALLIES/PIZZASLICA/DEFEAT/06.png","IMG/ALLIES/PIZZASLICA/DEFEAT/07.png"],
+	"hiteffect":["IMG/ALLIES/PIZZASLICA/HITEFFECT/01.png","IMG/ALLIES/PIZZASLICA/HITEFFECT/02.png"],
+	"projectile":["IMG/ALLIES/PIZZASLICA/PROJECTILE/01.png"]
+	},
+	
+	/*"fruitbasket":{
+	}*/
+	
+	"effects":{ "slow": ["IMG/MISC/SLOW/01.png","IMG/MISC/SLOW/02.png","IMG/MISC/SLOW/03.png","IMG/MISC/SLOW/04.png","IMG/MISC/SLOW/05.png","IMG/MISC/SLOW/06.png"],
+	"boost": ["IMG/MISC/BOOST/01.png","IMG/MISC/BOOST/02.png","IMG/MISC/BOOST/03.png"]
 	}
 }
 
-var effectList = {
-
-	1:	["IMG/EFFECTS/hit1_1.png", "IMG/EFFECTS/hit1_2.png"],
-	2:	["IMG/EFFECTS/hit2_1.png", "IMG/EFFECTS/hit2_2.png"],
-	3:	["IMG/EFFECTS/hit3_1.png", "IMG/EFFECTS/hit3_2.png"],
-	"icytreat":	["IMG/EFFECTS/icytreat_hit_1.png", "IMG/EFFECTS/icytreat_hit_2.png"],
-	"armon": ["IMG/EFFECTS/armon_hit_1.png", "IMG/EFFECTS/armon_hit_2.png", "IMG/EFFECTS/armon_hit_3.png"],
-	"quicky":["IMG/EFFECTS/quicky_hit_1.png", "IMG/EFFECTS/quicky_hit_2.png"],
-	"chumpy":["IMG/EFFECTS/chumpy_hit_1.png", "IMG/EFFECTS/chumpy_hit_2.png"],
-	"cubice":["IMG/EFFECTS/cubice_hit_1.png", "IMG/EFFECTS/cubice_hit_2.png"]
+var sprite_data = {
+	"armon":{ "move":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80],
+			xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+		},
+		"attack":{ x:[160,160,160,160,160,160,160,160,160,160], y:[240,240,240,240,240,240,240,240,240,240], 
+			xOffset:[5,5,5,5,5,5,5,5,5,5], yOffset:[-75,-75,-75,-75,-75,-75,-75,-75,-75,-75]
+		},
+		"defeat":{ x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80], 
+			xOffset:[5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5]
+		}
+	},
+	"armpro":{ "move":{ x:[100,100,100,100,100,100], y:[100,100,100,100,100,100],
+			xOffset:[5,5,5,5,5,5], yOffset:[-10,-10,-10,-10,-10,-10]
+		},
+		"attack":{ x:[300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300], y:[300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300], 
+			xOffset:[-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85], yOffset:[-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110,-110]
+		},
+		"defeat":{ x:[100,100,100,100,100,100,100], y:[100,100,100,100,100,100,100],
+			xOffset:[5,5,5,5,5,5,5], yOffset:[-10,-10,-10,-10,-10,-10,-10]
+		}
+	},
+	"chumpy":{ "move":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80],
+			xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+		},
+		"attack":{ x:[160,160,160,160,160,160,160,160,160,160], y:[80,80,80,80,80,80,80,80,80,80], 
+			xOffset:[5,5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5,5]
+		},
+		"defeat":{ x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80],
+			xOffset:[5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5]
+		}
+	},
+	"q":{ "move":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80],
+			xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+		},
+		"attack":{ x:[160,160,160,160,160,160,160,160,160,160], y:[80,80,80,80,80,80,80,80,80,80], 
+			xOffset:[5,5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5,5]
+		},
+		"defeat":{ x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80],
+			xOffset:[5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5]
+		}
+	},
+	
+	"fridge":{ "stand":{ x:[80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			}
+	},
+	"cubice":{ "stand":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+			},
+			"attack": { x:[160,160,160,160,160,160,160,160,160,160], y:[80,80,80,80,80,80,80,80,80,80], 
+				xOffset:[-85,-85,-85,-85,-85,-85,-85,-85,-85,-85], yOffset:[5,5,5,5,5,5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			}
+	},
+	"icytreat":{ "stand":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+			},
+			"attack": { x:[80,80,80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80],
+				xOffset:[5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5]
+			},
+			"projectile": { x:[20,20,20], y:[20,20,20], 
+				xOffset:[25,25,25], yOffset:[25,25,25]
+			},
+			"hiteffect":{ x:[20,20], y:[20,20], 
+				xOffset:[25,25], yOffset:[25,25]
+			}
+	},
+	"eggy":{ "stand":{ x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+			},
+			"defeat": { x:[240,240,240,240,240,240,240], y:[240,240,240,240,240,240,240], 
+				xOffset:[-75,-75,-75,-75,-75,-75,-75], yOffset:[-75,-75,-75,-75,-75,-75,-75]
+			}
+	},
+	
+	"oven":{ "stand":{ x:[80,80,80,80,80], y:[80,80,80,80,80], 
+				xOffset:[5,5,5,5,5], yOffset:[5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			}
+	},
+	
+	"candystand":{ "stand":{ x:[80,80,80,80,80], y:[80,80,80,80,80], 
+				xOffset:[5,5,5,5,5], yOffset:[5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			}
+	},
+	"lolipop":{ "stand":{ x:[80,80,80,80,80,80], y:[90,90,90,90,90,90], 
+				xOffset:[5,5,5,5,5,5], yOffset:[0,0,0,0,0,0]
+			},
+			"attack": { x:[160,160,160,160,160,160,160,160,160,160,160], y:[150,150,150,150,150,150,150,150,150,150,150], 
+				xOffset:[-85,-85,-85,-85,-85,-85,-85,-85,-85,-85,-85], yOffset:[-65,-65,-65,-65,-65,-65,-65,-65,-65,-65,-65]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80], y:[90,90,90,90,90,90,90],
+				xOffset:[5,5,5,5,5,5,5], yOffset:[0,0,0,0,0,0,0]
+			}
+	},
+	"chocobunny":{ "stand":{ x:[80,80,80,80], y:[80,80,80,80], 
+				xOffset:[5,5,5,5], yOffset:[5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5]
+			}
+	},
+	
+	"vendingmachine":{ "stand":{ x:[80,80,80,80,80], y:[80,80,80,80,80], 
+				xOffset:[5,5,5,5,5], yOffset:[5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5]
+			}
+	},
+	
+	/*"fastfood":{
+	},*/
+	"pizzaslica":{ "stand":{ x:[80,80,80,80,80,80], y:[80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5], yOffset:[5,5,5,5,5,5]
+			},
+			"attack": { x:[80,80,80,80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80,80,80,80], 
+				xOffset:[5,5,5,5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5,5,5,5]
+			},
+			"defeat": { x:[80,80,80,80,80,80,80], y:[80,80,80,80,80,80,80],
+				xOffset:[5,5,5,5,5,5,5], yOffset:[5,5,5,5,5,5,5]
+			},
+			"projectile": { x:[20,20,20], y:[20,20,20], 
+				xOffset:[25,25,25], yOffset:[50,50,50]
+			},
+			"hiteffect":{ x:[20,20], y:[20,20], 
+				xOffset:[25,25], yOffset:[50,50]
+			}
+	},
+	
+	/*"fruitbasket":{
+	},*/
 }
 
-var factoryList = {
+var fields = {
+	"eggy":"IMG/FIELDS/eggy_field.png"
+}
 
-	1:{	name:"Fridge", health: 50, cooldown: 250,
-		icon: "IMG/FACTORIES/fridge_stand_1.png",
-		listStand:["IMG/FACTORIES/fridge_stand_1.png","IMG/FACTORIES/fridge_stand_2.png","IMG/FACTORIES/fridge_stand_3.png","IMG/FACTORIES/fridge_stand_4.png","IMG/FACTORIES/fridge_stand_5.png","IMG/FACTORIES/fridge_stand_6.png","IMG/FACTORIES/fridge_stand_7.png","IMG/FACTORIES/fridge_stand_8.png"],
-		listStandX:[80,80,80,80,80,80,80,80],
-		listStandY:[80,80,80,80,80,80,80,80],
-		listStandXDiff:[5,5,5,5,5,5,5,5,5],
-		listStandYDiff:[5,5,5,5,5,5,5,5,5],
-		listDefeat:[],
-		listDefeatX:[],
-		listDefeatY:[],
-		listDefeatXDiff:[],
-		listDefeatYDiff:[],
-		targetScreens:["IMG/FACTORIES/fridge_healthy.png","IMG/FACTORIES/fridge_halved.png","IMG/FACTORIES/fridge_critical.png"]
+var field_data = {
+	"eggy": { x:240, y:240, xOffset:-75, yOffset:-75, duration: 560, effect:"slow"}
+}
+
+var enemy_icons = {
+	"armon": "IMG/ENEMIES/ARMON/icon.png",
+	"armpro": "IMG/ENEMIES/ARMPRO/icon.png",
+	"chumpy": "IMG/ENEMIES/CHUMPY/icon.png",
+	"q": "IMG/ENEMIES/Q/icon.png"
+}
+
+var icon_data = {
+	"armon": {x:20, y:20,
+			xOffset:0, yOffset:0},
+	"armpro": {x:30, y:30,
+			xOffset:-5, yOffset:-5},
+	"chumpy": {x:20, y:20,
+			xOffset:0, yOffset:0},
+	"q": {x:20, y:20,
+			xOffset:0, yOffset:0}
+}
+
+var ally_statusboxes = {
+	"fridge": "IMG/ALLIES/FRIDGE/stats.png",
+	"cubice": "IMG/ALLIES/CUBICE/stats.png",
+	"icytreat": "IMG/ALLIES/ICYTREAT/stats.png",
+	"eggy": "IMG/ALLIES/EGGY/stats.png"
+}
+
+var unit_stats = {
+
+	"armon":{ health: 500, gold: 100, range: 3, attack: 6, speed: 1, frameHit: [6,7,8]
+	},
+	"armpro":{ health: 1200, gold: 500, range: 3, attack: 12, speed: 0.5, frameHit: [9,10,11,12,13,14,15,16,17,18]
+	},
+	"chumpy":{ health: 125, gold: 20, range: 1, attack: 5, speed: 1.5, frameHit: [6,7]
+	},
+	"q":{ health: 50, gold: 30, range: 1, attack: 4, speed: 4, frameHit:[3,4,5,6]
+	},
+	
+	"fridge":{ health:50, type:0, timer: 0,cooldown: 250, builds:["cubice","icytreat","eggy"], storage: 2
+	},
+	"cubice":{ health: 200, range: 1, attack: 10, type: 1, frameHit:[7,8]
+	}, 
+	"icytreat":{ health: 150, type: 2, attack: 4 , projectile_speed: 5, release:[7,8,9]
+	},
+	"eggy":{ health: 250, type: 3, spawns:"eggy"
+	},
+	
+	"oven": { health:50, type:0, timer: 0,cooldown: 250, builds:[], storage: 2
+	},
+	
+	"candystand": { health:50, type:0, timer: 0,cooldown: 250, builds:["lolipop","chocobunny"], storage: 2
+	},
+	"lolipop":{ health: 200, range: 1, attack: 10, type: 1, frameHit:[7,8]
+	},
+	"chocobunny":{ health: 250, type: 4, aura:"boost"
+	},
+
+	"vendingmachine": { health:50, type:0, timer: 0,cooldown: 250, builds:[], storage: 2
+	},
+	
+	"fastfood": { health:50, type:0, timer: 0,cooldown: 250, builds:["pizzaslica"], storage: 2
+	},
+	"pizzaslica":{ health: 150, type: 2, attack: 3, projectile_speed: 12, release:[4,6,8,10]
+	},
+	
+	"fruitbasket": { health:50, type:0, timer: 0,cooldown: 250, builds:[], storage: 2
 	}
 }
 
-var stuffList = {
-	"coin":{ listImage:["IMG/STUFF/gold_move_1.png","IMG/STUFF/gold_move_2.png","IMG/STUFF/gold_move_3.png","IMG/STUFF/gold_move_4.png","IMG/STUFF/gold_move_5.png","IMG/STUFF/gold_move_6.png","IMG/STUFF/gold_move_7.png","IMG/STUFF/gold_move_8.png"],
-	listX:[30,30,30,30,30,30,30,30],
-	listY:[30,30,30,30,30,30,30,30],
-	listXDiff:[30,30,30,30,30,30,30,30],
-	listYDiff:[55,55,55,55,55,55,55,55]
-	},
-	"heart":{ listImage:["IMG/STUFF/heart_1.png","IMG/STUFF/heart_2.png","IMG/STUFF/heart_3.png","IMG/STUFF/heart_4.png"],
-	listX:[30,30,30,30,30,30,30,30],
-	listY:[30,30,30,30,30,30,30,30],
-	listXDiff:[30,30,30,30,30,30,30,30],
-	listYDiff:[55,55,55,55,55,55,55,55]
-	},
-	"indicator":{listImage:["IMG/STUFF/indicator_1.png","IMG/STUFF/indicator_2.png","IMG/STUFF/indicator_3.png"],
-	listX:[20,20,20],
-	listY:[24,24,24],
-	listXDiff:[35,35,35],
-	listYDiff:[-19,-19,-19]
-	},
-	"slow":{listImage:["IMG/STUFF/slow_1.png","IMG/STUFF/slow_2.png","IMG/STUFF/slow_3.png","IMG/STUFF/slow_4.png","IMG/STUFF/slow_5.png","IMG/STUFF/slow_6.png"],
-	listX:[80,80,80,80,80,80,80,80,80,80,80],
-	listY:[80,80,80,80,80,80,80,80,80,80,80],
-	listXDiff:[5,5,5,5,5,5,5,5,5,5,5],
-	listYDiff:[5,5,5,5,5,5,5,5,5,5,5]
-	}
+var build_stats = {
 }
 
-var itemStats = {
-	"Cubice":{available:0, total:0},
-	"IcyTreat":{available:0, total:0},
-	"Eggy":{available:0, total:0}
-}
+var screen_offset = {x:-8, y:-8}
 
-var buildStats = {
-	"Fridge":{cost:300, storage: 2}
-}
-
-var gameStats = {
-	"spawntime": 70,
-	"spawncounter": 0,
-	"gold": 300,
-	"life": 2000,
-	"timeleft": 100,
-	"screen": 1,
-	"maxgold": 999999
-}
-
-var shortcutList = {
-	"build": {1: "Z",
-	2: "X",
-	3: "C",
-	4: "V",
-	5: "B"
-	},
-	"item": {1: "1",
-	2: "2",
-	3: "3",
-	4: "4",
-	5: "Q",
-	6: "W",
-	7: "E",
-	8: "R",
-	9: "A",
-	10: "S",
-	11: "D",
-	12: "F"
-	},
-	"delete":{
-	1:"Ctrl+1",
-	2:"Ctrl+2"
-	}
+var game_stats = { gold: 300, 
+	spawn_time: 70,
+	spawn_counter: 0,
+	current_life: 2000,
+	max_life: 2000,
+	time_left: 200,
+	screen: 1,
+	status: 0,
+	max_gold: 999999
 }
